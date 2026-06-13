@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WWU TDM and Parking Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #1D6FA4;
+    --teal-light: #EAF4FB;
+    --teal-mid: #378ADD;
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --amber: #B87D0E;
+    --amber-light: #FFF3CC;
+    --red: #C0392B;
+    --red-light: #FAD7D7;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555;
+    --text-tertiary: #888;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f6f7;
+    --bg-tertiary: #eef0f2;
+    --border: rgba(0,0,0,0.1);
+    --border-med: rgba(0,0,0,0.15);
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text-primary: #f0f0f0;
+      --text-secondary: #aaa;
+      --text-tertiary: #777;
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #242424;
+      --bg-tertiary: #2e2e2e;
+      --border: rgba(255,255,255,0.1);
+      --border-med: rgba(255,255,255,0.15);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  .page-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  /* Header */
+  .site-header {
+    background: var(--teal);
+    color: #fff;
+    padding: 0 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .site-header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.25rem 0 1rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .site-header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #fff;
+    margin-bottom: 3px;
+  }
+  .site-header .sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+  }
+  .mock-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  /* Period selector */
+  .period-bar {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    width: fit-content;
+    border: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .pb {
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+  }
+  .pb:hover { background: var(--bg-secondary); color: var(--text-primary); }
+  .pb.active {
+    background: var(--teal);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* Metric cards */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .mc {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--border);
+  }
+  .mc-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .mc-label i { font-size: 14px; }
+  .mc-val {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+  .mc-sub { font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px; }
+  .trend { font-size: 11px; font-weight: 500; }
+  .trend-up { color: #1D9E75; }
+  .trend-dn { color: #C0392B; }
+  .trend-neu { color: var(--text-tertiary); }
+
+  /* Cards */
+  .card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 1.125rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.875rem;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .caveat {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+
+  /* Two col */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .leg-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* Data note */
+  .data-note {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    background: var(--bg-secondary);
+    border-left: 2px solid var(--border-med);
+    padding: 6px 10px;
+    border-radius: 0 4px 4px 0;
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  /* Chart wrap */
+  .chart-wrap { position: relative; width: 100%; }
+
+  /* GHG bars */
+  .ghg-row { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
+  .ghg-label { font-size: 12px; color: var(--text-secondary); min-width: 130px; }
+  .ghg-bar-wrap { flex: 1; height: 10px; background: var(--bg-tertiary); border-radius: 99px; overflow: hidden; }
+  .ghg-bar { height: 100%; border-radius: 99px; }
+  .ghg-val { font-size: 12px; color: var(--text-primary); min-width: 55px; text-align: right; font-weight: 500; }
+
+  /* Patrol table */
+  .patrol-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .patrol-tbl th { text-align: left; font-weight: 500; color: var(--text-secondary); padding: 6px 10px; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .patrol-tbl td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
+  .patrol-tbl tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
+  .badge-ok { background: var(--green-light); color: #0F6E56; }
+  .badge-low { background: var(--amber-light); color: var(--amber); }
+  .badge-na { background: var(--bg-secondary); color: var(--text-tertiary); }
+
+  /* NLQ */
+  .nlq-wrap {
+    background: var(--teal-light);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(29,111,164,0.15);
+    padding: 1rem 1.125rem;
+    margin-bottom: 1.25rem;
+  }
+  .nlq-label { font-size: 12px; color: var(--teal); font-weight: 500; margin-bottom: 8px; }
+  .nlq-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    border: 1px solid rgba(29,111,164,0.25);
+    background: var(--bg-primary);
+    color: var(--teal);
+    cursor: pointer;
+    transition: all .12s;
+    font-family: inherit;
+  }
+  .chip:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
+
+  /* NLQ answer panel */
+  .nlq-answer {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(29,111,164,0.2);
+    font-size: 13px;
+    color: var(--text-primary);
+    display: none;
+  }
+  .nlq-answer.visible { display: block; }
+
+  /* Footer */
+  .page-footer {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="site-header-inner">
+    <div>
+      <h1>WWU TDM and Parking Dashboard</h1>
+      <div class="sub" id="period-label">Showing: today · June 9, 2026 · Parking: Genetec/T2 · Transit: WTA Quick Site (not validated)</div>
+    </div>
+    <span class="mock-badge">⚠ concept mockup — illustrative data</span>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Period selector -->
+  <div class="period-bar">
+    <button class="pb active" onclick="setPeriod('day')">Today</button>
+    <button class="pb" onclick="setPeriod('week')">This week</button>
+    <button class="pb" onclick="setPeriod('month')">This month</button>
+    <button class="pb" onclick="setPeriod('quarter')">This quarter</button>
+    <button class="pb" onclick="setPeriod('year')">This year</button>
+  </div>
+
+  <!-- Metric cards -->
+  <div class="metrics" id="metrics"></div>
+
+  <!-- NLQ -->
+  <div class="nlq-wrap">
+    <div class="nlq-label"><i class="ti ti-message-circle"></i> Ask a question about the data</div>
+    <div class="nlq-chips">
+      <button class="chip" onclick="showAnswer('q1')">Highest bus ridership day last quarter</button>
+      <button class="chip" onclick="showAnswer('q2')">Which zone had most parking pressure in May?</button>
+      <button class="chip" onclick="showAnswer('q3')">Are we on track for the GHG goal?</button>
+      <button class="chip" onclick="showAnswer('q4')">How does Monday compare to Friday parking?</button>
+      <button class="chip" onclick="showAnswer('q5')">Lowest ridership day of the week?</button>
+    </div>
+    <div class="nlq-answer" id="nlq-answer"></div>
+  </div>
+
+  <!-- Trend chart -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title" id="trend-title">Hourly reads — June 9</span>
+      <span class="caveat">parking = LPR index · month-over-month trends more meaningful than daily</span>
+    </div>
+    <div class="legend">
+      <span><span class="leg-dot" style="background:#378ADD"></span>Parking events</span>
+      <span><span class="leg-dot" style="background:#1D9E75"></span>Transit boardings (all fares)</span>
+      <span><span class="leg-dot" style="background:#639922"></span>WWU pass boardings</span>
+    </div>
+    <div class="chart-wrap" style="height:200px">
+      <canvas id="trendChart" role="img" aria-label="Trend chart of parking and transit over selected period">Parking and transit trend.</canvas>
+    </div>
+    <div class="data-note" id="trend-note">Today: 2 of 9 zones patrolled. Interpret with caution — partial coverage day.</div>
+  </div>
+
+  <!-- Zone + GHG -->
+  <div class="two-col">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-hdr">
+        <span class="card-title">Parking by zone</span>
+        <span class="caveat">lighter = not patrolled</span>
+      </div>
+      <div class="chart-wrap" style="height:210px">
+        <canvas id="zoneChart" role="img" aria-label="Parking reads by zone">Zone breakdown.</canvas>
+      </div>
+      <div class="data-note">Zones with 0 reads may not have been patrolled this period</div>
+    </div>
+
+    <div class="card" style="margin-bottom:0">
+      <div class="card-hdr">
+        <span class="card-title">GHG avoided estimate</span>
+        <span class="caveat">EPA factors · ±30%</span>
+      </div>
+      <div id="ghg-content" style="margin-top:4px"></div>
+      <div class="data-note">CO₂e avoided vs. equivalent SOV trips. Align with campus SIMAP/AFLEET methodology before publishing.</div>
+    </div>
+  </div>
+
+  <!-- Transit by stop -->
+  <div class="card" style="margin-top:1.25rem">
+    <div class="card-hdr">
+      <span class="card-title">Transit boardings by campus stop</span>
+      <span class="caveat">April 1–7, 2026 · APC data · not validated</span>
+    </div>
+    <div class="chart-wrap" style="height:180px">
+      <canvas id="stopChart" role="img" aria-label="Boardings by campus stop">Stop breakdown.</canvas>
+    </div>
+    <div class="data-note">Viking Union dominates boardings — reflects route structure, not just walk-up demand. Two Bill McDonald stop IDs (3076, 8181) shown separately.</div>
+  </div>
+
+  <!-- Patrol tracker -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title">Patrol coverage tracker</span>
+      <span class="caveat">context for interpreting the parking index</span>
+    </div>
+    <table class="patrol-tbl" id="patrol-tbl">
+    </table>
+    <div class="data-note">Par coverage is learned over time per zone. Days below par are flagged in the trend chart. This panel helps you decide how much to trust a given day's count.</div>
+  </div>
+
+  <div class="page-footer">
+    WWU TDM and Parking Dashboard · Concept mockup · Nunes-Ueno Consulting for Walker Consultants · paulo@nunesueno.com · www.nunes-ueno.com<br>
+    Data shown is illustrative. Parking figures based on Genetec/T2 LPR reads. Transit figures based on WTA Quick Site farebox data (not validated). Not for public distribution.
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const gridC = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+const textC = isDark ? '#aaa' : '#777';
+
+const periods = {
+  day: {
+    label: 'Showing: today · June 9, 2026 · Parking: Genetec/T2 · Transit: WTA Quick Site (not validated)',
+    trendTitle: 'Hourly reads — June 9',
+    metrics: [
+      { icon:'ti-car', label:'Parking events today', val:'~340', sub:'72 reads · 2 zones patrolled · adjusted', trend:'dn', trendTxt:'↓ 8% vs. 30-day avg' },
+      { icon:'ti-bus', label:'Transit boardings today', val:'4,910', sub:'all fare types · WTA routes', trend:'up', trendTxt:'↑ 12% vs. 30-day avg' },
+      { icon:'ti-leaf', label:'GHG avoided est.', val:'1.2 MT', sub:'CO₂e · EPA factors', trend:'up', trendTxt:'on track vs. SAP goal' },
+      { icon:'ti-shield-check', label:'Patrol coverage', val:'2 / 9', sub:'zones covered today', trend:'dn', trendTxt:'⚠ low — flag this day' },
+    ],
+    labels: ['8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm'],
+    parking: [0,21,0,0,53,0,0,0,0],
+    transit: [420,580,610,720,810,760,690,640,680],
+    wwuPass: [180,240,260,310,350,320,290,270,280],
+    note: 'Today: 2 of 9 zones patrolled. Patrol gaps mean total campus parking is significantly undercounted. Use as directional only.',
+    ghg: { period: 'Today (est.)', val: 1.2, ytd: 74, target: 120 },
+    patrol: [
+      { p:'P2', zones:'Zone 1', reads:21, dur:'~20 min', status:'ok' },
+      { p:'P1', zones:'Zone 6', reads:53, dur:'~18 min', status:'ok' },
+      { p:'—', zones:'Zones 2–5, 7–9', reads:'0', dur:'not patrolled', status:'na' },
+    ]
+  },
+  week: {
+    label: 'Showing: week of June 3–9, 2026',
+    trendTitle: 'Daily trend — this week',
+    metrics: [
+      { icon:'ti-car', label:'Parking events', val:'~1,840', sub:'7-day total · adjusted index', trend:'dn', trendTxt:'↓ 5% vs. prior week' },
+      { icon:'ti-bus', label:'Transit boardings', val:'31,200', sub:'7-day total · all fares', trend:'up', trendTxt:'↑ 9% vs. prior week' },
+      { icon:'ti-leaf', label:'GHG avoided est.', val:'7.8 MT', sub:'week estimate', trend:'up', trendTxt:'above weekly pace' },
+      { icon:'ti-shield-check', label:'Days fully covered', val:'3 / 5', sub:'≥6 zones patrolled', trend:'neu', trendTxt:'2 days flagged low' },
+    ],
+    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    parking: [390,420,380,360,280,95,45],
+    transit: [5100,5300,5200,5000,4900,2800,1800],
+    wwuPass: [2100,2200,2150,2050,2000,800,400],
+    note: 'Mon–Fri commute pattern is visible. Weekend drop is consistent with reduced campus activity and less enforcement.',
+    ghg: { period: 'This week (est.)', val: 7.8, ytd: 74, target: 120 },
+    patrol: [
+      { p:'Multiple', zones:'All 9 zones', reads:'~1,840', dur:'Mon–Fri', status:'ok' },
+      { p:'—', zones:'Weekend coverage', reads:'~140', dur:'Sat–Sun reduced', status:'low' },
+    ]
+  },
+  month: {
+    label: 'Showing: June 2026 (month to date)',
+    trendTitle: 'Daily trend — June 2026',
+    metrics: [
+      { icon:'ti-car', label:'Parking events MTD', val:'~7,200', sub:'month to date · adjusted', trend:'dn', trendTxt:'↓ 11% vs. June 2025' },
+      { icon:'ti-bus', label:'Transit boardings MTD', val:'118,400', sub:'month to date · all fares', trend:'up', trendTxt:'↑ 14% vs. June 2025' },
+      { icon:'ti-leaf', label:'GHG avoided MTD', val:'18.4 MT', sub:'month to date estimate', trend:'up', trendTxt:'62% of monthly pace' },
+      { icon:'ti-shield-check', label:'Coverage quality', val:'71%', sub:'days with ≥6 zones', trend:'neu', trendTxt:'improving vs. May' },
+    ],
+    labels: ['Jun 1','Jun 2','Jun 3','Jun 4','Jun 5','Jun 6','Jun 7','Jun 8','Jun 9'],
+    parking: [410,390,420,380,360,345,370,355,340],
+    transit: [5100,5050,5200,4900,4800,4950,5100,4900,4910],
+    wwuPass: [2100,2080,2150,2000,1980,2050,2100,1950,2000],
+    note: 'Month to date. End-of-month validated totals will differ slightly from daily accumulation shown here.',
+    ghg: { period: 'Month to date', val: 18.4, ytd: 74, target: 120 },
+    patrol: [
+      { p:'Full team', zones:'All 9 zones', reads:'~7,200', dur:'Weekdays', status:'ok' },
+      { p:'Partial', zones:'Varies', reads:'Flagged days: 3', dur:'Low coverage days', status:'low' },
+    ]
+  },
+  quarter: {
+    label: 'Showing: Q2 2026 (April–June)',
+    trendTitle: 'Weekly trend — Q2 2026',
+    metrics: [
+      { icon:'ti-car', label:'Parking events Q2', val:'~68,000', sub:'quarter total · adjusted', trend:'dn', trendTxt:'↓ 8% vs. Q2 2025' },
+      { icon:'ti-bus', label:'Transit boardings Q2', val:'1.12M', sub:'quarter total · all fares', trend:'up', trendTxt:'↑ 16% vs. Q2 2025' },
+      { icon:'ti-leaf', label:'GHG avoided Q2', val:'48.2 MT', sub:'quarter estimate', trend:'up', trendTxt:'40% of annual SAP goal' },
+      { icon:'ti-shield-check', label:'Data quality', val:'Good', sub:'≥4 validated months', trend:'up', trendTxt:'Q1 data validated' },
+    ],
+    labels: ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8','Wk 9','Wk 10','Wk 11','Wk 12','Wk 13'],
+    parking: [1900,1850,1920,1780,1820,1750,1690,1730,1700,1650,1720,1680,1640],
+    transit: [22000,21500,23000,22500,22800,23500,24000,23800,24200,24800,25000,24600,25200],
+    wwuPass: [9000,8800,9400,9200,9300,9600,9800,9700,9900,10100,10200,10000,10300],
+    note: 'Q2 trend. Spring quarter shows strongest transit use. Parking pressure declining week over week.',
+    ghg: { period: 'Quarter to date', val: 48.2, ytd: 74, target: 120 },
+    patrol: [
+      { p:'Full team', zones:'All 9 zones', reads:'~68,000', dur:'Full quarter', status:'ok' },
+    ]
+  },
+  year: {
+    label: 'Showing: academic year 2025–26',
+    trendTitle: 'Monthly trend — AY 2025–26',
+    metrics: [
+      { icon:'ti-car', label:'Parking events YTD', val:'~241,000', sub:'academic year to date', trend:'dn', trendTxt:'↓ 7% vs. AY 2024–25' },
+      { icon:'ti-bus', label:'Transit boardings YTD', val:'3.84M', sub:'academic year · all fares', trend:'up', trendTxt:'↑ 11% vs. AY 2024–25' },
+      { icon:'ti-leaf', label:'GHG avoided YTD', val:'74 MT', sub:'year to date estimate', trend:'up', trendTxt:'62% of SAP annual goal' },
+      { icon:'ti-chart-line', label:'Mode shift trend', val:'↑ +3pt', sub:'est. transit share', trend:'up', trendTxt:'vs. last WSDOT survey' },
+    ],
+    labels: ['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'],
+    parking: [28000,26500,25000,18000,24000,23000,22500,21000,20500,19800],
+    transit: [380000,400000,420000,290000,410000,430000,440000,450000,460000,480000],
+    wwuPass: [155000,163000,171000,118000,167000,175000,179000,183000,187000,196000],
+    note: 'Full academic year. Dec dip reflects winter break. Year-over-year comparison is the most defensible metric for program evaluation.',
+    ghg: { period: 'Year to date', val: 74, ytd: 74, target: 120 },
+    patrol: [
+      { p:'Full team', zones:'All 9 zones', reads:'~241,000', dur:'Academic year', status:'ok' },
+    ]
+  }
+};
+
+const nlqAnswers = {
+  q1: 'Based on Q2 2026 data, <strong>Wednesday April 23</strong> had the highest single-day bus ridership at an estimated <strong>5,840 boardings</strong> — about 19% above the quarter average. Wednesdays consistently show the strongest midweek peak across all routes serving campus.',
+  q2: '<strong>Zone 6</strong> recorded the highest parking reads in May 2026 with approximately 1,240 reads for the month, followed by Zone 3 (960) and Zone 4 (880). Note that Zone 6 also receives the most frequent enforcement patrols, so some of this difference reflects coverage patterns as well as true demand.',
+  q3: 'Year to date, the dashboard estimates <strong>74 MT CO₂e avoided</strong> against a SAP annual target of 120 MT — putting the program at 62% of goal with roughly 3 months of the academic year remaining. At current pace, the program is on track to meet the annual target. Note: this estimate uses EPA MOVES factors and an assumed 12-mile average commute. Align with SIMAP methodology before including in formal reporting.',
+  q4: 'In the last 30 days, <strong>Monday average parking was ~390 events</strong> vs. <strong>Friday at ~280</strong> — a 28% drop. Friday has consistently been the lightest parking day of the week, consistent with hybrid work patterns among staff. Monday is the peak.',
+  q5: 'Looking at Q2 2026 by day of week, <strong>Friday had the lowest average bus ridership</strong> at approximately 4,620 boardings per day — about 16% below the Tuesday peak of 5,490. Weekend figures are excluded as they reflect a different population and service pattern.'
+};
+
+let trendChart = null, zoneChart = null, stopChart = null;
+
+function setPeriod(p) {
+  document.querySelectorAll('.pb').forEach(b => {
+    const map = {day:'Today',week:'This week',month:'This month',quarter:'This quarter',year:'This year'};
+    b.classList.toggle('active', b.textContent.trim() === map[p]);
+  });
+  const d = periods[p];
+  document.getElementById('period-label').textContent = d.label;
+  document.getElementById('trend-title').textContent = d.trendTitle;
+  document.getElementById('trend-note').textContent = d.note;
+  document.getElementById('nlq-answer').classList.remove('visible');
+  renderMetrics(d.metrics);
+  renderTrend(d);
+  renderZone(p);
+  renderGhg(d.ghg);
+  renderPatrol(d.patrol);
+}
+
+function renderMetrics(metrics) {
+  document.getElementById('metrics').innerHTML = metrics.map(m => `
+    <div class="mc">
+      <div class="mc-label"><i class="ti ${m.icon}"></i>${m.label}</div>
+      <div class="mc-val">${m.val}</div>
+      <div class="mc-sub">${m.sub}</div>
+      <div class="trend trend-${m.trend}">${m.trendTxt}</div>
+    </div>`).join('');
+}
+
+function renderTrend(d) {
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: { labels: d.labels, datasets: [
+      { label: 'Parking', data: d.parking, borderColor: '#378ADD', borderWidth: 2, pointRadius: 0, tension: 0.35, yAxisID: 'y', backgroundColor: 'transparent' },
+      { label: 'Transit', data: d.transit, borderColor: '#1D9E75', borderWidth: 2, pointRadius: 0, tension: 0.35, yAxisID: 'y2', backgroundColor: 'transparent' },
+      { label: 'WWU pass', data: d.wwuPass, borderColor: '#639922', borderWidth: 1.5, borderDash: [4,3], pointRadius: 0, tension: 0.35, yAxisID: 'y2', backgroundColor: 'transparent' },
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toLocaleString()}` }}},
+      scales: {
+        x: { ticks: { color: textC, font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { color: gridC }},
+        y: { position: 'left', ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { color: gridC }, title: { display: true, text: 'Parking', color: textC, font: { size: 11 }}},
+        y2: { position: 'right', ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { display: false }, title: { display: true, text: 'Boardings', color: textC, font: { size: 11 }}}
+      }
+    }
+  });
+}
+
+function renderZone(p) {
+  const zd = {
+    day:     { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [53,21,0,0,0,0,0] },
+    week:    { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [280,145,190,160,0,85,0] },
+    month:   { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [1240,820,960,880,540,420,340] },
+    quarter: { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [11200,7400,8800,8100,5200,3900,3100] },
+    year:    { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [38000,25000,30000,27500,18000,13500,11000] },
+  }[p];
+  const colors = zd.data.map(v => v === 0 ? '#B5D4F4' : '#378ADD');
+  if (zoneChart) zoneChart.destroy();
+  zoneChart = new Chart(document.getElementById('zoneChart'), {
+    type: 'bar',
+    data: { labels: zd.labels, datasets: [{ label: 'Reads', data: zd.data, backgroundColor: colors, borderWidth: 0, borderRadius: 3 }]},
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.x === 0 ? ' not patrolled' : ` ${Number(ctx.parsed.x).toLocaleString()} reads` }}},
+      scales: {
+        x: { ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { color: gridC }},
+        y: { ticks: { color: textC, font: { size: 12 }}, grid: { display: false }}
+      }
+    }
+  });
+
+  if (!stopChart) {
+    stopChart = new Chart(document.getElementById('stopChart'), {
+      type: 'bar',
+      data: { labels: ['Viking Union','Haggard Hall','Bill Mc @ Rec (8181)','Bill Mc @ Rec (3076)'],
+        datasets: [{ label: 'Boardings', data: [34421,16889,13574,11680], backgroundColor: ['#1D9E75','#5DCAA5','#9FE1CB','#C5EDDF'], borderWidth: 0, borderRadius: 3 }]},
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }},
+        scales: {
+          x: { ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { color: gridC }},
+          y: { ticks: { color: textC, font: { size: 12 }}, grid: { display: false }}
+        }
+      }
+    });
+  }
+}
+
+function renderGhg(g) {
+  const pct = Math.min(100, Math.round((g.val / g.target) * 100));
+  document.getElementById('ghg-content').innerHTML = `
+    <div class="ghg-row"><span class="ghg-label">${g.period}</span><div class="ghg-bar-wrap"><div class="ghg-bar" style="width:${pct}%;background:#1D9E75"></div></div><span class="ghg-val">${g.val} MT</span></div>
+    <div class="ghg-row"><span class="ghg-label">SAP annual target</span><div class="ghg-bar-wrap"><div class="ghg-bar" style="width:100%;background:#B5D4F4"></div></div><span class="ghg-val">${g.target} MT</span></div>
+    <div style="font-size:11px;color:var(--text-tertiary);margin-top:10px">${pct}% of annual SAP goal · estimated CO₂e avoided vs. equivalent SOV trips</div>`;
+}
+
+function renderPatrol(rows) {
+  document.getElementById('patrol-tbl').innerHTML = `
+    <thead><tr><th>Patroller</th><th>Zones</th><th>Reads</th><th>Duration</th><th>Status</th></tr></thead>
+    <tbody>${rows.map(r => `<tr>
+      <td>${r.p}</td><td>${r.zones}</td><td>${r.reads}</td><td>${r.dur}</td>
+      <td><span class="badge badge-${r.status}">${r.status === 'ok' ? 'on par' : r.status === 'low' ? 'below par' : 'not covered'}</span></td>
+    </tr>`).join('')}</tbody>`;
+}
+
+function showAnswer(q) {
+  const el = document.getElementById('nlq-answer');
+  el.innerHTML = nlqAnswers[q];
+  el.classList.add('visible');
+}
+
+setPeriod('day');
+</script>
+</body>
+</html>
