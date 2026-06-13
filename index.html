@@ -252,34 +252,73 @@
 
   /* NLQ */
   .nlq-wrap {
-    background: var(--teal-light);
+    background: var(--bg-primary);
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(29,111,164,0.15);
+    border: 1px solid var(--border);
     padding: 1rem 1.125rem;
     margin-bottom: 1.25rem;
   }
-  .nlq-label { font-size: 12px; color: var(--teal); font-weight: 500; margin-bottom: 8px; }
+  .nlq-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .nlq-input {
+    flex: 1;
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-med);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    transition: border-color .12s;
+  }
+  .nlq-input::placeholder { color: var(--text-tertiary); }
+  .nlq-input:focus { border-color: var(--teal-mid); }
+  .nlq-ask-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    padding: 9px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-med);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all .12s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .nlq-ask-btn i { font-size: 14px; }
+  .nlq-ask-btn:hover { background: var(--bg-secondary); border-color: var(--border-med); }
   .nlq-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-size: 12px;
     padding: 5px 12px;
     border-radius: 99px;
-    border: 1px solid rgba(29,111,164,0.25);
-    background: var(--bg-primary);
-    color: var(--teal);
+    border: 1px solid var(--border-med);
+    background: transparent;
+    color: var(--text-primary);
     cursor: pointer;
     transition: all .12s;
     font-family: inherit;
   }
-  .chip:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .chip i { font-size: 13px; opacity: 0.7; }
+  .chip:hover { background: var(--bg-secondary); border-color: var(--border-med); }
 
   /* NLQ answer panel */
   .nlq-answer {
     margin-top: 10px;
     padding: 10px 12px;
-    background: var(--bg-primary);
+    background: var(--bg-secondary);
     border-radius: var(--radius-md);
-    border: 1px solid rgba(29,111,164,0.2);
+    border: 1px solid var(--border);
     font-size: 13px;
     color: var(--text-primary);
     display: none;
@@ -325,13 +364,15 @@
 
   <!-- NLQ -->
   <div class="nlq-wrap">
-    <div class="nlq-label"><i class="ti ti-message-circle"></i> Ask a question about the data</div>
+    <div class="nlq-input-row">
+      <input type="text" class="nlq-input" id="nlq-input" placeholder="What is lowest ridership day of the week last quarter?">
+      <button class="nlq-ask-btn" onclick="askQuestion()">Ask <i class="ti ti-arrow-up-right"></i></button>
+    </div>
     <div class="nlq-chips">
-      <button class="chip" onclick="showAnswer('q1')">Highest bus ridership day last quarter</button>
-      <button class="chip" onclick="showAnswer('q2')">Which zone had most parking pressure in May?</button>
-      <button class="chip" onclick="showAnswer('q3')">Are we on track for the GHG goal?</button>
-      <button class="chip" onclick="showAnswer('q4')">How does Monday compare to Friday parking?</button>
-      <button class="chip" onclick="showAnswer('q5')">Lowest ridership day of the week?</button>
+      <button class="chip" onclick="showAnswer('q1')">Highest bus day last quarter <i class="ti ti-arrow-up-right"></i></button>
+      <button class="chip" onclick="showAnswer('q2')">Busiest zone in May <i class="ti ti-arrow-up-right"></i></button>
+      <button class="chip" onclick="showAnswer('q3')">On track for GHG goal? <i class="ti ti-arrow-up-right"></i></button>
+      <button class="chip" onclick="showAnswer('q4')">Mon vs Fri parking <i class="ti ti-arrow-up-right"></i></button>
     </div>
     <div class="nlq-answer" id="nlq-answer"></div>
   </div>
@@ -634,6 +675,10 @@ function showAnswer(q) {
   const el = document.getElementById('nlq-answer');
   el.innerHTML = nlqAnswers[q];
   el.classList.add('visible');
+}
+
+function askQuestion() {
+  showAnswer('q5');
 }
 
 setPeriod('day');
