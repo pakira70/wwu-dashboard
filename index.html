@@ -3,245 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WWU TDM and Parking Dashboard</title>
+<title>WWU TDM &amp; Parking Dashboard</title>
 <link rel="icon" href="nu-flavicon.png" type="image/png">
+<script src="program_data.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --teal: #1D6FA4;
-    --teal-light: #EAF4FB;
-    --teal-mid: #378ADD;
-    --green: #1D9E75;
-    --green-light: #E1F5EE;
-    --amber: #B87D0E;
-    --amber-light: #FFF3CC;
-    --red: #C0392B;
-    --red-light: #FAD7D7;
-    --text-primary: #1a1a1a;
-    --text-secondary: #555;
-    --text-tertiary: #888;
-    --bg-primary: #ffffff;
-    --bg-secondary: #f5f6f7;
-    --bg-tertiary: #eef0f2;
-    --border: rgba(0,0,0,0.1);
-    --border-med: rgba(0,0,0,0.15);
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --teal: #1D6FA4; --teal-light: #EAF4FB; --teal-mid: #378ADD;
+    --green: #1D9E75; --green-light: #E1F5EE;
+    --amber: #B87D0E; --amber-light: #FFF3CC;
+    --red: #C0392B; --red-light: #FAD7D7;
+    --text-primary: #1a1a1a; --text-secondary: #555; --text-tertiary: #888;
+    --bg-primary: #ffffff; --bg-secondary: #f5f6f7; --bg-tertiary: #eef0f2;
+    --border: rgba(0,0,0,0.1); --border-med: rgba(0,0,0,0.15);
+    --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px;
+    --transit: #1D9E75; --parking: #378ADD; --bike: #C9920A;
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
-      --text-primary: #f0f0f0;
-      --text-secondary: #aaa;
-      --text-tertiary: #777;
-      --bg-primary: #1a1a1a;
-      --bg-secondary: #242424;
-      --bg-tertiary: #2e2e2e;
-      --border: rgba(255,255,255,0.1);
-      --border-med: rgba(255,255,255,0.15);
+      --text-primary: #f0f0f0; --text-secondary: #aaa; --text-tertiary: #777;
+      --bg-primary: #1a1a1a; --bg-secondary: #242424; --bg-tertiary: #2e2e2e;
+      --border: rgba(255,255,255,0.1); --border-med: rgba(255,255,255,0.15);
     }
   }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    min-height: 100vh;
-  }
-
-  .page-wrap {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 1.5rem 3rem;
-  }
-
-  /* Header */
-  .site-header {
-    background: var(--teal);
-    color: #fff;
-    padding: 0 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  .site-header-inner {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 1.25rem 0 1rem;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .site-header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: #fff;
-    margin-bottom: 3px;
-  }
-  .site-header .sub {
-    font-size: 12px;
-    color: rgba(255,255,255,0.75);
-  }
-  .mock-badge {
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 99px;
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.3);
-    white-space: nowrap;
-    align-self: flex-start;
-    margin-top: 2px;
-  }
-
-  /* Period selector */
-  .period-bar {
-    display: flex;
-    gap: 4px;
-    background: var(--bg-primary);
-    border-radius: var(--radius-md);
-    padding: 4px;
-    width: fit-content;
-    border: 1px solid var(--border);
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
-  }
-  .pb {
-    font-size: 13px;
-    padding: 6px 16px;
-    border-radius: var(--radius-sm);
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all .15s;
-    font-family: inherit;
-  }
-  .pb:hover { background: var(--bg-secondary); color: var(--text-primary); }
-  .pb.active {
-    background: var(--teal);
-    color: #fff;
-    font-weight: 500;
-  }
-
-  /* Metric cards */
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 12px;
-    margin-bottom: 1.5rem;
-  }
-  .mc {
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    padding: 1rem 1.125rem;
-    border: 1px solid var(--border);
-  }
-  .mc-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg-tertiary); color: var(--text-primary); min-height: 100vh; }
+  .page-wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+  .site-header { background: var(--teal); color: #fff; padding: 0 1.5rem; margin-bottom: 1.25rem; }
+  .site-header-inner { max-width: 960px; margin: 0 auto; padding: 1.25rem 0 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .site-header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: #fff; margin-bottom: 3px; }
+  .site-header .sub { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.45; }
+  .mock-badge { font-size: 11px; padding: 4px 10px; border-radius: 99px; background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); white-space: nowrap; align-self: flex-start; margin-top: 2px; }
+  .view { display: none; }
+  .view.active { display: block; }
+  #view-focus.active { display: flex; flex-direction: column; }
+  .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-med); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; font-family: inherit; margin-bottom: 1rem; min-height: 44px; }
+  .back-btn:hover { background: var(--bg-secondary); }
+  .focus-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; align-items: center; }
+  .focus-nav label { font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; margin-right: 4px; }
+  .ctrl-bar { display: flex; flex-wrap: wrap; gap: 4px; background: var(--bg-primary); border-radius: var(--radius-md); padding: 4px; border: 1px solid var(--border); }
+  .ctrl-btn { font-size: 12px; padding: 6px 12px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--text-secondary); cursor: pointer; font-family: inherit; min-height: 44px; white-space: nowrap; }
+  .ctrl-btn:hover { background: var(--bg-secondary); color: var(--text-primary); }
+  .ctrl-btn.active { background: var(--teal); color: #fff; font-weight: 500; }
+  .window-select { font-size: 13px; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-med); background: var(--bg-primary); color: var(--text-primary); font-family: inherit; min-height: 44px; }
+  .snapshot-section { background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.125rem 1.125rem; margin-bottom: 1.25rem; }
+  .snapshot-hdr { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .snapshot-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+  .snapshot-compare { font-size: 12px; color: var(--text-tertiary); }
+  .baseline-cycle { background: none; border: none; padding: 0; font-family: inherit; font-size: 12px; color: var(--text-secondary); cursor: pointer; border-bottom: 1px dashed var(--border-med); transition: color .15s, border-color .15s; }
+  .baseline-cycle:hover { color: var(--teal); border-bottom-color: var(--teal); }
+  .baseline-cycle:focus-visible { outline: 2px solid var(--teal-mid); outline-offset: 2px; border-radius: 2px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; align-items: stretch; }
+  .mc { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 1rem 1.125rem; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; min-height: 132px; }
+  .mc-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
   .mc-label i { font-size: 14px; }
-  .mc-val {
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1;
-    margin-bottom: 4px;
-    letter-spacing: -0.02em;
-  }
-  .mc-sub { font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px; }
-  .trend { font-size: 11px; font-weight: 500; }
-  .trend-up { color: #1D9E75; }
-  .trend-dn { color: #C0392B; }
-  .trend-neu { color: var(--text-tertiary); }
-
-  /* Cards */
-  .card {
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
-    padding: 1.125rem 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-  .card-hdr {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.875rem;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .card-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: .05em;
-  }
-  .caveat {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    font-style: italic;
-  }
-
-  /* Two col */
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
+  .mc-val { font-size: 26px; font-weight: 600; color: var(--text-primary); line-height: 1; margin-bottom: 0; letter-spacing: -0.02em; flex-shrink: 0; }
+  .mc-mode .mc-trend-block { flex: 1; display: flex; align-items: center; justify-content: flex-start; text-align: left; min-height: 0; padding: 8px 0; }
+  .mc-ghg .mc-trend-block { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; padding: 6px 0 8px; flex-shrink: 0; }
+  .mc-ghg-shares { margin-top: auto; flex-shrink: 0; }
+  .trend { font-size: 12px; font-weight: 500; line-height: 1.2; width: 100%; }
+  .trend-pct { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; display: block; line-height: 1.1; }
+  .trend-vs { font-size: 11px; color: var(--text-tertiary); font-weight: 400; }
+  .trend-up { color: var(--green); } .trend-dn { color: var(--red); } .trend-neu { color: var(--text-tertiary); }
+  .patrol-expand-btn { display: inline-block; margin-top: 8px; font-size: 12px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-med); background: var(--bg-secondary); color: var(--teal); cursor: pointer; font-family: inherit; }
+  .patrol-expand-btn:hover { background: var(--bg-tertiary); }
+  .tooltip-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--bg-secondary); color: var(--text-tertiary); font-size: 10px; cursor: help; margin-left: 4px; position: relative; }
+  .tooltip-icon:hover::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: 200px; padding: 8px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 10px; font-weight: 400; color: var(--text-secondary); line-height: 1.4; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.12); pointer-events: none; }
+  .card { background: var(--bg-primary); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.125rem 1.25rem; margin-bottom: 1.25rem; }
+  .card.clickable { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .card.clickable:hover { border-color: var(--teal-mid); box-shadow: 0 2px 8px rgba(29,111,164,0.08); }
+  .card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.875rem; flex-wrap: wrap; gap: 6px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .05em; display: flex; align-items: center; gap: 6px; }
+  .card-title i { font-size: 15px; }
+  .caveat { font-size: 11px; color: var(--text-tertiary); font-style: italic; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
   @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
-
-  /* Legend */
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-  .leg-dot {
-    width: 10px; height: 10px;
-    border-radius: 2px;
-    display: inline-block;
-    margin-right: 4px;
-    vertical-align: middle;
-  }
-
-  /* Data note */
-  .data-note {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    background: var(--bg-secondary);
-    border-left: 2px solid var(--border-med);
-    padding: 6px 10px;
-    border-radius: 0 4px 4px 0;
-    margin-top: 10px;
-    font-style: italic;
-  }
-
-  /* Chart wrap */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; font-size: 12px; color: var(--text-secondary); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+  .data-note { font-size: 11px; color: var(--text-tertiary); background: var(--bg-secondary); border-left: 2px solid var(--border-med); padding: 6px 10px; border-radius: 0 4px 4px 0; margin-top: 10px; font-style: italic; }
   .chart-wrap { position: relative; width: 100%; }
-
-  /* GHG bars */
   .ghg-row { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
   .ghg-label { font-size: 12px; color: var(--text-secondary); min-width: 130px; }
   .ghg-bar-wrap { flex: 1; height: 10px; background: var(--bg-tertiary); border-radius: 99px; overflow: hidden; }
   .ghg-bar { height: 100%; border-radius: 99px; }
   .ghg-val { font-size: 12px; color: var(--text-primary); min-width: 55px; text-align: right; font-weight: 500; }
-
-  /* Patrol table */
+  .mc-ghg-shares { margin-top: 10px; }
+  .mc-ghg-row { margin: 6px 0; }
+  .mc-ghg-hdr { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; margin-bottom: 4px; font-size: 11px; color: var(--text-secondary); }
+  .mc-ghg-hdr strong { font-size: 12px; color: var(--text-primary); font-weight: 600; white-space: nowrap; }
+  .mc-ghg-bar { height: 8px; background: var(--bg-tertiary); border-radius: 99px; overflow: hidden; }
+  .mc-ghg-bar > div { height: 100%; border-radius: 99px; }
   .patrol-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
   .patrol-tbl th { text-align: left; font-weight: 500; color: var(--text-secondary); padding: 6px 10px; border-bottom: 1px solid var(--border); font-size: 12px; }
   .patrol-tbl td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
@@ -250,91 +101,12 @@
   .badge-ok { background: var(--green-light); color: #0F6E56; }
   .badge-low { background: var(--amber-light); color: var(--amber); }
   .badge-na { background: var(--bg-secondary); color: var(--text-tertiary); }
-
-  /* NLQ */
-  .nlq-wrap {
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
-    padding: 1rem 1.125rem;
-    margin-bottom: 1.25rem;
-  }
-  .nlq-input-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .nlq-input {
-    flex: 1;
-    font-size: 13px;
-    padding: 9px 12px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-med);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-family: inherit;
-    outline: none;
-    transition: border-color .12s;
-  }
-  .nlq-input::placeholder { color: var(--text-tertiary); }
-  .nlq-input:focus { border-color: var(--teal-mid); }
-  .nlq-ask-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 13px;
-    padding: 9px 14px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-med);
-    background: transparent;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all .12s;
-    font-family: inherit;
-    white-space: nowrap;
-  }
-  .nlq-ask-btn i { font-size: 14px; }
-  .nlq-ask-btn:hover { background: var(--bg-secondary); border-color: var(--border-med); }
-  .nlq-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    padding: 5px 12px;
-    border-radius: 99px;
-    border: 1px solid var(--border-med);
-    background: transparent;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all .12s;
-    font-family: inherit;
-  }
-  .chip i { font-size: 13px; opacity: 0.7; }
-  .chip:hover { background: var(--bg-secondary); border-color: var(--border-med); }
-
-  /* NLQ answer panel */
-  .nlq-answer {
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--text-primary);
-    display: none;
-  }
-  .nlq-answer.visible { display: block; }
-
-  /* Footer */
-  .page-footer {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    text-align: center;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
-    margin-top: 2rem;
-  }
+  .focus-mode-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem; }
+  .page-footer { font-size: 11px; color: var(--text-tertiary); text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+  .open-hint { font-size: 11px; color: var(--teal); margin-left: auto; }
+  .bar-legend-subtle { display: flex; gap: 12px; font-size: 10px; color: var(--text-tertiary); margin-bottom: 8px; }
+  .bar-legend-subtle span { display: flex; align-items: center; gap: 5px; }
+  .avg-line-swatch { width: 14px; height: 0; border-top: 2px dashed rgba(90,90,90,0.75); }
 </style>
 </head>
 <body>
@@ -342,110 +114,131 @@
 <div class="site-header">
   <div class="site-header-inner">
     <div>
-      <h1>WWU TDM and Parking Dashboard</h1>
-      <div class="sub" id="period-label">Showing: today · June 9, 2026 · Parking: Genetec/T2 · Transit: WTA Quick Site (not validated)</div>
+      <h1>WWU TDM &amp; Parking Dashboard</h1>
+      <div class="sub" id="header-sub"></div>
     </div>
-    <span class="mock-badge">⚠ concept mockup — illustrative data</span>
+    <span class="mock-badge">concept mockup &mdash; illustrative data</span>
   </div>
 </div>
 
 <div class="page-wrap">
 
-  <!-- Period selector -->
-  <div class="period-bar">
-    <button class="pb active" onclick="setPeriod('day')">Today</button>
-    <button class="pb" onclick="setPeriod('week')">This week</button>
-    <button class="pb" onclick="setPeriod('month')">This month</button>
-    <button class="pb" onclick="setPeriod('quarter')">This quarter</button>
-    <button class="pb" onclick="setPeriod('year')">This year</button>
-  </div>
+  <!-- OVERVIEW -->
+  <div id="view-overview" class="view active">
+    <section class="snapshot-section">
+      <div class="snapshot-hdr">
+        <span class="snapshot-title">Most Recent Month Snapshot &mdash; <span id="snapshot-date"></span></span>
+        <span class="snapshot-compare">Compared to <button type="button" class="baseline-cycle" id="baseline-cycle" aria-label="Change comparison baseline">previous month</button></span>
+      </div>
+      <div class="metrics" id="overview-metrics"></div>
+    </section>
 
-  <!-- Metric cards -->
-  <div class="metrics" id="metrics"></div>
-
-  <!-- NLQ -->
-  <div class="nlq-wrap">
-    <div class="nlq-input-row">
-      <input type="text" class="nlq-input" id="nlq-input" placeholder="What is lowest ridership day of the week last quarter?">
-      <button class="nlq-ask-btn" onclick="askQuestion()">Ask <i class="ti ti-arrow-up-right"></i></button>
-    </div>
-    <div class="nlq-chips">
-      <button class="chip" onclick="showAnswer('q1')">Highest bus day last quarter <i class="ti ti-arrow-up-right"></i></button>
-      <button class="chip" onclick="showAnswer('q2')">Busiest zone in May <i class="ti ti-arrow-up-right"></i></button>
-      <button class="chip" onclick="showAnswer('q3')">On track for GHG goal? <i class="ti ti-arrow-up-right"></i></button>
-      <button class="chip" onclick="showAnswer('q4')">Mon vs Fri parking <i class="ti ti-arrow-up-right"></i></button>
-    </div>
-    <div class="nlq-answer" id="nlq-answer"></div>
-  </div>
-
-  <!-- Trend chart -->
-  <div class="card">
-    <div class="card-hdr">
-      <span class="card-title" id="trend-title">Hourly reads — June 9</span>
-      <span class="caveat">parking = LPR index · month-over-month trends more meaningful than daily</span>
-    </div>
-    <div class="legend">
-      <span><span class="leg-dot" style="background:#378ADD"></span>Parking events</span>
-      <span><span class="leg-dot" style="background:#1D9E75"></span>Transit boardings (all fares)</span>
-      <span><span class="leg-dot" style="background:#639922"></span>WWU pass boardings</span>
-    </div>
-    <div class="chart-wrap" style="height:200px">
-      <canvas id="trendChart" role="img" aria-label="Trend chart of parking and transit over selected period">Parking and transit trend.</canvas>
-    </div>
-    <div class="data-note" id="trend-note">Today: 2 of 9 zones patrolled. Interpret with caution — partial coverage day.</div>
-  </div>
-
-  <!-- Zone + GHG -->
-  <div class="two-col">
-    <div class="card" style="margin-bottom:0">
+    <div class="card">
       <div class="card-hdr">
-        <span class="card-title">Parking by zone</span>
-        <span class="caveat">lighter = not patrolled</span>
+        <span class="card-title">Mode activity index &mdash; program to date</span>
+        <span class="caveat">Each mode indexed to 100 at its start &middot; shared timeline</span>
       </div>
-      <div class="chart-wrap" style="height:210px">
-        <canvas id="zoneChart" role="img" aria-label="Parking reads by zone">Zone breakdown.</canvas>
+      <div class="legend">
+        <span><span class="leg-dot" style="background:var(--transit)"></span>Transit</span>
+        <span><span class="leg-dot" style="background:var(--parking)"></span>Parking</span>
+        <span><span class="leg-dot" style="background:var(--bike)"></span>Bike</span>
       </div>
-      <div class="data-note">Zones with 0 reads may not have been patrolled this period</div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="heroIndexChart" role="img" aria-label="Indexed trend of transit, parking, and bike activity program to date"></canvas>
+      </div>
+      <div class="data-note">Trend monitor, not a report card. Indexed lines show relative change since each mode&rsquo;s first period. Bike uses synthetic data (May&ndash;Oct: &frac14; transit, Nov&ndash;Apr: &frac19; transit).</div>
     </div>
 
-    <div class="card" style="margin-bottom:0">
+    <div class="card clickable" data-focus="transit" tabindex="0" role="button" aria-label="Open transit focus view">
       <div class="card-hdr">
-        <span class="card-title">GHG avoided estimate</span>
-        <span class="caveat">EPA factors · ±30%</span>
+        <span class="card-title"><i class="ti ti-bus"></i> Transit</span>
+        <span class="open-hint">View detail &rarr;</span>
       </div>
-      <div id="ghg-content" style="margin-top:4px"></div>
-      <div class="data-note">CO₂e avoided vs. equivalent SOV trips. Align with campus SIMAP/AFLEET methodology before publishing.</div>
+      <div class="two-col">
+        <div><div class="chart-wrap" style="height:180px"><canvas id="ovStopChart" role="img" aria-label="Transit boardings by campus stop"></canvas></div></div>
+        <div><div class="chart-wrap" style="height:180px"><canvas id="ovTransitLine" role="img" aria-label="Transit ridership over time"></canvas></div></div>
+      </div>
+      <div class="data-note">WTA Quick Site farebox + APC &middot; not validated</div>
+    </div>
+
+    <div class="card clickable" data-focus="parking" tabindex="0" role="button" aria-label="Open parking focus view">
+      <div class="card-hdr">
+        <span class="card-title"><i class="ti ti-car"></i> Parking</span>
+        <span class="open-hint">View detail &rarr;</span>
+      </div>
+      <div class="two-col">
+        <div><div class="chart-wrap" style="height:180px"><canvas id="ovZoneChart" role="img" aria-label="Parking reads by zone"></canvas></div></div>
+        <div><div class="chart-wrap" style="height:180px"><canvas id="ovParkingLine" role="img" aria-label="Parking events over time"></canvas></div></div>
+      </div>
+      <div class="data-note">Genetec/T2 LPR reads &middot; lighter bars = not patrolled &middot; 0 reads may mean no patrol that day</div>
+    </div>
+
+    <div class="card clickable" data-focus="bike" tabindex="0" role="button" aria-label="Open bike focus view">
+      <div class="card-hdr">
+        <span class="card-title"><i class="ti ti-bike"></i> Bike</span>
+        <span class="open-hint">View detail &rarr;</span>
+      </div>
+      <div class="two-col">
+        <div><div class="chart-wrap" style="height:180px"><canvas id="ovBikeBar" role="img" aria-label="Bike counts by counter"></canvas></div></div>
+        <div><div class="chart-wrap" style="height:180px"><canvas id="ovBikeLine" role="img" aria-label="Bike IN counts over time"></canvas></div></div>
+      </div>
+      <div class="data-note">Eco-Counter &middot; count INs only &middot; synthetic data (May&ndash;Oct: &frac14; transit, Nov&ndash;Apr: &frac19; transit)</div>
     </div>
   </div>
 
-  <!-- Transit by stop -->
-  <div class="card" style="margin-top:1.25rem">
-    <div class="card-hdr">
-      <span class="card-title">Transit boardings by campus stop</span>
-      <span class="caveat">April 1–7, 2026 · APC data · not validated</span>
-    </div>
-    <div class="chart-wrap" style="height:180px">
-      <canvas id="stopChart" role="img" aria-label="Boardings by campus stop">Stop breakdown.</canvas>
-    </div>
-    <div class="data-note">Viking Union dominates boardings — reflects route structure, not just walk-up demand. Two Bill McDonald stop IDs (3076, 8181) shown separately.</div>
-  </div>
+  <!-- FOCUS -->
+  <div id="view-focus" class="view">
+    <button type="button" class="back-btn" id="back-overview"><i class="ti ti-arrow-left"></i> Back to overview</button>
+    <div class="focus-mode-title" id="focus-title">Transit</div>
 
-  <!-- Patrol tracker -->
-  <div class="card">
-    <div class="card-hdr">
-      <span class="card-title">Patrol coverage tracker</span>
-      <span class="caveat">context for interpreting the parking index</span>
+    <div class="focus-nav">
+      <label>Group by</label>
+      <div class="ctrl-bar" id="group-bar">
+        <button type="button" class="ctrl-btn active" data-group="over_time">Over time</button>
+        <button type="button" class="ctrl-btn" data-group="hour">By Hour of the Day</button>
+        <button type="button" class="ctrl-btn" data-group="dow">By Day of the Week</button>
+      </div>
+      <label style="margin-left:8px">Window</label>
+      <select class="window-select" id="window-select">
+        <option value="program">Program to date</option>
+        <option value="this_month">This month</option>
+        <option value="last_month">Last month</option>
+        <option value="this_quarter">This quarter</option>
+        <option value="last_quarter">Last quarter</option>
+        <option value="this_year">This year</option>
+        <option value="last_year">Last year</option>
+        <option value="custom">Custom range</option>
+      </select>
+      <span id="custom-range-wrap" style="display:none;gap:6px;align-items:center">
+        <input type="date" class="window-select" id="custom-from">
+        <span style="font-size:12px;color:var(--text-tertiary)">to</span>
+        <input type="date" class="window-select" id="custom-to">
+      </span>
     </div>
-    <table class="patrol-tbl" id="patrol-tbl">
-    </table>
-    <div class="data-note">Par coverage is learned over time per zone. Days below par are flagged in the trend chart. This panel helps you decide how much to trust a given day's count.</div>
+
+    <div class="card">
+      <div class="card-hdr">
+        <span class="card-title" id="focus-chart-title">Transit trend</span>
+        <span class="caveat" id="focus-chart-caveat"></span>
+      </div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="focusHeroChart" role="img" aria-label="Focus mode hero trend chart"></canvas>
+      </div>
+    </div>
+
+    <div id="focus-context"></div>
+    <div class="card" id="focus-location-card">
+      <div class="card-hdr"><span class="card-title" id="focus-loc-title">By location</span></div>
+      <div class="bar-legend-subtle" id="focus-loc-legend" style="display:none">
+        <span><span class="avg-line-swatch"></span> Program average</span>
+      </div>
+      <div class="chart-wrap" style="height:200px"><canvas id="focusLocChart" role="img" aria-label="Location breakdown for selected mode"></canvas></div>
+    </div>
   </div>
 
   <div class="page-footer">
-    WWU TDM and Parking Dashboard · Concept mockup · Nunes-Ueno Consulting for Walker Consultants · paulo@nunesueno.com · www.nunes-ueno.com<br>
-    Data shown is illustrative. Parking figures based on Genetec/T2 LPR reads. Transit figures based on WTA Quick Site farebox data (not validated). Not for public distribution.
+    WWU TDM &amp; Parking Dashboard &middot; Concept mockup &middot; Parking: Genetec/T2 LPR &middot; Transit: WTA (not validated) &middot; Bike: Eco-Counter INs &middot; GHG &plusmn;30% &middot; paulo@nunesueno.com
   </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -453,236 +246,704 @@
 const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const gridC = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
 const textC = isDark ? '#aaa' : '#777';
+const COLORS = { transit: '#1D9E75', parking: '#378ADD', bike: '#C9920A' };
+const SAP_TARGET = 120;
+const INDEX_AY_ANCHOR = 74; // index.html academic-year reporting anchor
+const REF_DATE = PROGRAM_DATA[PROGRAM_DATA.length - 1].date;
+const BASELINE_ORDER = ['prior', 'program', 'yoy'];
 
-const periods = {
-  day: {
-    label: 'Showing: today · June 9, 2026 · Parking: Genetec/T2 · Transit: WTA Quick Site (not validated)',
-    trendTitle: 'Hourly reads — June 9',
-    metrics: [
-      { icon:'ti-car', label:'Parking events today', val:'~340', sub:'72 reads · 2 zones patrolled · adjusted', trend:'dn', trendTxt:'↓ 8% vs. 30-day avg' },
-      { icon:'ti-bus', label:'Transit boardings today', val:'4,910', sub:'all fare types · WTA routes', trend:'up', trendTxt:'↑ 12% vs. 30-day avg' },
-      { icon:'ti-leaf', label:'GHG avoided est.', val:'1.2 MT', sub:'CO₂e · EPA factors', trend:'up', trendTxt:'on track vs. SAP goal' },
-      { icon:'ti-shield-check', label:'Patrol coverage', val:'2 / 9', sub:'zones covered today', trend:'dn', trendTxt:'⚠ low — flag this day' },
-    ],
-    labels: ['8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm'],
-    parking: [0,21,0,0,53,0,0,0,0],
-    transit: [420,580,610,720,810,760,690,640,680],
-    wwuPass: [180,240,260,310,350,320,290,270,280],
-    note: 'Today: 2 of 9 zones patrolled. Patrol gaps mean total campus parking is significantly undercounted. Use as directional only.',
-    ghg: { period: 'Today (est.)', val: 1.2, ytd: 74, target: 120 },
-    patrol: [
-      { p:'P2', zones:'Zone 1', reads:21, dur:'~20 min', status:'ok' },
-      { p:'P1', zones:'Zone 6', reads:53, dur:'~18 min', status:'ok' },
-      { p:'—', zones:'Zones 2–5, 7–9', reads:'0', dur:'not patrolled', status:'na' },
-    ]
-  },
-  week: {
-    label: 'Showing: week of June 3–9, 2026',
-    trendTitle: 'Daily trend — this week',
-    metrics: [
-      { icon:'ti-car', label:'Parking events', val:'~1,840', sub:'7-day total · adjusted index', trend:'dn', trendTxt:'↓ 5% vs. prior week' },
-      { icon:'ti-bus', label:'Transit boardings', val:'31,200', sub:'7-day total · all fares', trend:'up', trendTxt:'↑ 9% vs. prior week' },
-      { icon:'ti-leaf', label:'GHG avoided est.', val:'7.8 MT', sub:'week estimate', trend:'up', trendTxt:'above weekly pace' },
-      { icon:'ti-shield-check', label:'Days fully covered', val:'3 / 5', sub:'≥6 zones patrolled', trend:'neu', trendTxt:'2 days flagged low' },
-    ],
-    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    parking: [390,420,380,360,280,95,45],
-    transit: [5100,5300,5200,5000,4900,2800,1800],
-    wwuPass: [2100,2200,2150,2050,2000,800,400],
-    note: 'Mon–Fri commute pattern is visible. Weekend drop is consistent with reduced campus activity and less enforcement.',
-    ghg: { period: 'This week (est.)', val: 7.8, ytd: 74, target: 120 },
-    patrol: [
-      { p:'Multiple', zones:'All 9 zones', reads:'~1,840', dur:'Mon–Fri', status:'ok' },
-      { p:'—', zones:'Weekend coverage', reads:'~140', dur:'Sat–Sun reduced', status:'low' },
-    ]
-  },
-  month: {
-    label: 'Showing: June 2026 (month to date)',
-    trendTitle: 'Daily trend — June 2026',
-    metrics: [
-      { icon:'ti-car', label:'Parking events MTD', val:'~7,200', sub:'month to date · adjusted', trend:'dn', trendTxt:'↓ 11% vs. June 2025' },
-      { icon:'ti-bus', label:'Transit boardings MTD', val:'118,400', sub:'month to date · all fares', trend:'up', trendTxt:'↑ 14% vs. June 2025' },
-      { icon:'ti-leaf', label:'GHG avoided MTD', val:'18.4 MT', sub:'month to date estimate', trend:'up', trendTxt:'62% of monthly pace' },
-      { icon:'ti-shield-check', label:'Coverage quality', val:'71%', sub:'days with ≥6 zones', trend:'neu', trendTxt:'improving vs. May' },
-    ],
-    labels: ['Jun 1','Jun 2','Jun 3','Jun 4','Jun 5','Jun 6','Jun 7','Jun 8','Jun 9'],
-    parking: [410,390,420,380,360,345,370,355,340],
-    transit: [5100,5050,5200,4900,4800,4950,5100,4900,4910],
-    wwuPass: [2100,2080,2150,2000,1980,2050,2100,1950,2000],
-    note: 'Month to date. End-of-month validated totals will differ slightly from daily accumulation shown here.',
-    ghg: { period: 'Month to date', val: 18.4, ytd: 74, target: 120 },
-    patrol: [
-      { p:'Full team', zones:'All 9 zones', reads:'~7,200', dur:'Weekdays', status:'ok' },
-      { p:'Partial', zones:'Varies', reads:'Flagged days: 3', dur:'Low coverage days', status:'low' },
-    ]
-  },
-  quarter: {
-    label: 'Showing: Q2 2026 (April–June)',
-    trendTitle: 'Weekly trend — Q2 2026',
-    metrics: [
-      { icon:'ti-car', label:'Parking events Q2', val:'~68,000', sub:'quarter total · adjusted', trend:'dn', trendTxt:'↓ 8% vs. Q2 2025' },
-      { icon:'ti-bus', label:'Transit boardings Q2', val:'1.12M', sub:'quarter total · all fares', trend:'up', trendTxt:'↑ 16% vs. Q2 2025' },
-      { icon:'ti-leaf', label:'GHG avoided Q2', val:'48.2 MT', sub:'quarter estimate', trend:'up', trendTxt:'40% of annual SAP goal' },
-      { icon:'ti-shield-check', label:'Data quality', val:'Good', sub:'≥4 validated months', trend:'up', trendTxt:'Q1 data validated' },
-    ],
-    labels: ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8','Wk 9','Wk 10','Wk 11','Wk 12','Wk 13'],
-    parking: [1900,1850,1920,1780,1820,1750,1690,1730,1700,1650,1720,1680,1640],
-    transit: [22000,21500,23000,22500,22800,23500,24000,23800,24200,24800,25000,24600,25200],
-    wwuPass: [9000,8800,9400,9200,9300,9600,9800,9700,9900,10100,10200,10000,10300],
-    note: 'Q2 trend. Spring quarter shows strongest transit use. Parking pressure declining week over week.',
-    ghg: { period: 'Quarter to date', val: 48.2, ytd: 74, target: 120 },
-    patrol: [
-      { p:'Full team', zones:'All 9 zones', reads:'~68,000', dur:'Full quarter', status:'ok' },
-    ]
-  },
-  year: {
-    label: 'Showing: academic year 2025–26',
-    trendTitle: 'Monthly trend — AY 2025–26',
-    metrics: [
-      { icon:'ti-car', label:'Parking events YTD', val:'~241,000', sub:'academic year to date', trend:'dn', trendTxt:'↓ 7% vs. AY 2024–25' },
-      { icon:'ti-bus', label:'Transit boardings YTD', val:'3.84M', sub:'academic year · all fares', trend:'up', trendTxt:'↑ 11% vs. AY 2024–25' },
-      { icon:'ti-leaf', label:'GHG avoided YTD', val:'74 MT', sub:'year to date estimate', trend:'up', trendTxt:'62% of SAP annual goal' },
-      { icon:'ti-chart-line', label:'Mode shift trend', val:'↑ +3pt', sub:'est. transit share', trend:'up', trendTxt:'vs. last WSDOT survey' },
-    ],
-    labels: ['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'],
-    parking: [28000,26500,25000,18000,24000,23000,22500,21000,20500,19800],
-    transit: [380000,400000,420000,290000,410000,430000,440000,450000,460000,480000],
-    wwuPass: [155000,163000,171000,118000,167000,175000,179000,183000,187000,196000],
-    note: 'Full academic year. Dec dip reflects winter break. Year-over-year comparison is the most defensible metric for program evaluation.',
-    ghg: { period: 'Year to date', val: 74, ytd: 74, target: 120 },
-    patrol: [
-      { p:'Full team', zones:'All 9 zones', reads:'~241,000', dur:'Academic year', status:'ok' },
-    ]
+const ZONE_LABELS = ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'];
+const ZONE_WEIGHTS = [0.28, 0.14, 0.16, 0.14, 0.09, 0.07, 0.06];
+const ZONE_PATROLLED = [1, 1, 1, 1, 0.7, 0.5, 0.4];
+const STOP_LABELS = ['Viking Union','Haggard Hall','Bill Mc @ Rec (8181)','Bill Mc @ Rec (3076)'];
+const STOP_WEIGHTS = [0.42, 0.21, 0.17, 0.14];
+const COUNTER_LABELS = ['Viking Union path','Haggard Hall','Rec Center'];
+const COUNTER_WEIGHTS = [0.48, 0.32, 0.20];
+
+const charts = {};
+let activeView = 'overview';
+let focusMode = 'transit';
+let focusGroup = 'over_time';
+let focusWindow = 'program';
+let baselineMode = 'prior';
+let patrolExpanded = false;
+let baselineCycleWired = false;
+
+function parseDate(s) { return new Date(s + 'T12:00:00'); }
+function formatYMD(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function monthKey(d) { return d.slice(0, 7); }
+function monthLabel(ym) {
+  const [y,m] = ym.split('-');
+  return parseDate(`${y}-${m}-01`).toLocaleDateString('en-US',{month:'short',year:'2-digit'});
+}
+function seeded(seed) {
+  const x = Math.sin(seed * 9973) * 10000;
+  return x - Math.floor(x);
+}
+
+function bikeRatioForDate(dateStr) {
+  const d = parseDate(dateStr);
+  const month = d.getMonth();
+  if (d.getFullYear() < 2024 || (d.getFullYear() === 2024 && month < 4)) return 0;
+  return month >= 4 && month <= 9 ? 1 / 4 : 1 / 9;
+}
+
+function buildBikeData() {
+  return PROGRAM_DATA.map(r => {
+    const ratio = bikeRatioForDate(r.date);
+    if (!ratio) return { date: r.date, bike_ins: 0 };
+    const dow = parseDate(r.date).getDay();
+    const w = dow === 0 || dow === 6 ? 0.35 : 1;
+    const base = r.transit_all * ratio * w * (0.92 + seeded(parseDate(r.date).getTime() % 10000) * 0.16);
+    return { date: r.date, bike_ins: Math.max(1, Math.round(base)) };
+  });
+}
+const BIKE_DATA = buildBikeData();
+
+function getAcademicYearRecords(records) {
+  const ref = parseDate(REF_DATE);
+  const y = ref.getFullYear();
+  const m = ref.getMonth();
+  const ayStartYear = m >= 8 ? y : y - 1;
+  const start = formatYMD(new Date(ayStartYear, 8, 1));
+  return records.filter(r => r.date >= start && r.date <= REF_DATE);
+}
+
+function rawDailyGHGTransit(r) {
+  return r.transit_all * (24 * 0.404 - 12 * 0.135) / 1000;
+}
+function rawDailyGHGBike(r) {
+  return (r.bike_ins || 0) * (8 * 0.404 - 4 * 0.135) / 1000;
+}
+function computeNetDisplacement() {
+  const ayT = getAcademicYearRecords(PROGRAM_DATA);
+  const ayB = getAcademicYearRecords(BIKE_DATA);
+  const raw = ayT.reduce((s, r) => s + rawDailyGHGTransit(r), 0)
+    + ayB.reduce((s, r) => s + rawDailyGHGBike(r), 0);
+  return raw > 0 ? INDEX_AY_ANCHOR / raw : 0.007;
+}
+const NET_DISPLACEMENT = computeNetDisplacement();
+
+function dailyGHGTransit(r) {
+  return rawDailyGHGTransit(r) * NET_DISPLACEMENT;
+}
+function dailyGHGBike(r) {
+  return rawDailyGHGBike(r) * NET_DISPLACEMENT;
+}
+function formatGHG(mt) {
+  if (mt >= 100) return Math.round(mt);
+  if (mt >= 10) return Math.round(mt * 10) / 10;
+  return Math.round(mt * 10) / 10;
+}
+function sumGHG(recordsTransit, recordsBike) {
+  const t = recordsTransit.reduce((s, r) => s + dailyGHGTransit(r), 0);
+  const b = recordsBike.reduce((s, r) => s + dailyGHGBike(r), 0);
+  return t + b;
+}
+function calcGHGTransit(records) {
+  return formatGHG(records.reduce((s, r) => s + dailyGHGTransit(r), 0));
+}
+function calcGHGBike(records) {
+  return formatGHG(records.reduce((s, r) => s + dailyGHGBike(r), 0));
+}
+function calcGHGTotal(recordsTransit, recordsBike) {
+  return formatGHG(sumGHG(recordsTransit, recordsBike));
+}
+
+const avgLinePlugin = {
+  id: 'avgLines',
+  afterDatasetsDraw(chart, _args, opts) {
+    const avgs = opts.avgs;
+    if (!avgs || !avgs.length) return;
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+    ctx.save();
+    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.48)' : 'rgba(80,80,80,0.58)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    avgs.forEach((avg, i) => {
+      if (!meta.data[i]) return;
+      const bar = meta.data[i];
+      const x = chart.scales.x.getPixelForValue(avg);
+      ctx.beginPath();
+      ctx.moveTo(x, bar.y - bar.height / 2);
+      ctx.lineTo(x, bar.y + bar.height / 2);
+      ctx.stroke();
+    });
+    ctx.restore();
   }
 };
+Chart.register(avgLinePlugin);
 
-const nlqAnswers = {
-  q1: 'Based on Q2 2026 data, <strong>Wednesday April 23</strong> had the highest single-day bus ridership at an estimated <strong>5,840 boardings</strong> — about 19% above the quarter average. Wednesdays consistently show the strongest midweek peak across all routes serving campus.',
-  q2: '<strong>Zone 6</strong> recorded the highest parking reads in May 2026 with approximately 1,240 reads for the month, followed by Zone 3 (960) and Zone 4 (880). Note that Zone 6 also receives the most frequent enforcement patrols, so some of this difference reflects coverage patterns as well as true demand.',
-  q3: 'Year to date, the dashboard estimates <strong>74 MT CO₂e avoided</strong> against a SAP annual target of 120 MT — putting the program at 62% of goal with roughly 3 months of the academic year remaining. At current pace, the program is on track to meet the annual target. Note: this estimate uses EPA MOVES factors and an assumed 12-mile average commute. Align with SIMAP methodology before including in formal reporting.',
-  q4: 'In the last 30 days, <strong>Monday average parking was ~390 events</strong> vs. <strong>Friday at ~280</strong> — a 28% drop. Friday has consistently been the lightest parking day of the week, consistent with hybrid work patterns among staff. Monday is the peak.',
-  q5: 'Looking at Q2 2026 by day of week, <strong>Friday had the lowest average bus ridership</strong> at approximately 4,620 boardings per day — about 16% below the Tuesday peak of 5,490. Weekend figures are excluded as they reflect a different population and service pattern.'
-};
+function headerSub() {
+  const thru = parseDate(REF_DATE).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  document.getElementById('header-sub').textContent =
+    `Data through ${thru} \u00B7 Parking: Genetec/T2 \u00B7 Transit: WTA Quick Site (not validated) \u00B7 Bike: synthetic (seasonal)`;
+}
 
-let trendChart = null, zoneChart = null, stopChart = null;
+function filterWindow(records, windowKey, from, to) {
+  const ref = parseDate(REF_DATE);
+  const y = ref.getFullYear(), m = ref.getMonth();
+  let s, e;
+  if (windowKey === 'program') return records.slice();
+  if (windowKey === 'this_month') { s = formatYMD(new Date(y,m,1)); e = REF_DATE; }
+  else if (windowKey === 'last_month') { s = formatYMD(new Date(y,m-1,1)); e = formatYMD(new Date(y,m,0)); }
+  else if (windowKey === 'this_quarter') { const q = Math.floor(m/3); s = formatYMD(new Date(y,q*3,1)); e = REF_DATE; }
+  else if (windowKey === 'last_quarter') { const q = Math.floor(m/3); const lq = q===0?3:q-1; const ly = q===0?y-1:y; s = formatYMD(new Date(ly,lq*3,1)); e = formatYMD(new Date(ly,lq*3+3,0)); }
+  else if (windowKey === 'this_year') { s = formatYMD(new Date(y,0,1)); e = REF_DATE; }
+  else if (windowKey === 'last_year') { s = formatYMD(new Date(y-1,0,1)); e = formatYMD(new Date(y-1,11,31)); }
+  else { s = from; e = to; }
+  return records.filter(r => r.date >= s && r.date <= e);
+}
 
-function setPeriod(p) {
-  document.querySelectorAll('.pb').forEach(b => {
-    const map = {day:'Today',week:'This week',month:'This month',quarter:'This quarter',year:'This year'};
-    b.classList.toggle('active', b.textContent.trim() === map[p]);
+function priorWindowRecords(records, windowKey, from, to) {
+  const cur = filterWindow(records, windowKey, from, to);
+  if (!cur.length) return [];
+  const shift = (ds) => { const d = parseDate(ds); d.setFullYear(d.getFullYear()-1); return formatYMD(d); };
+  return records.filter(r => r.date >= shift(cur[0].date) && r.date <= shift(cur[cur.length-1].date));
+}
+
+function autoBucket(records) {
+  const days = records.length;
+  if (days <= 90) return 'weekly';
+  if (days <= 365) return 'monthly';
+  return 'quarterly';
+}
+
+function aggregateTime(records, mode, bucket) {
+  const field = mode === 'transit' ? 'transit_all' : mode === 'parking' ? 'parking_reads' : 'bike_ins';
+  const groups = {};
+  records.forEach(r => {
+    let key, label;
+    if (bucket === 'weekly') {
+      const d = parseDate(r.date);
+      const day = d.getDay();
+      d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+      key = formatYMD(d);
+      label = 'Wk ' + parseDate(key).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    } else if (bucket === 'monthly') {
+      key = monthKey(r.date);
+      label = monthLabel(key);
+    } else if (bucket === 'quarterly') {
+      const d = parseDate(r.date);
+      key = `${d.getFullYear()}-Q${Math.floor(d.getMonth()/3)+1}`;
+      label = key.replace('-Q',' Q');
+    } else {
+      key = r.date;
+      label = parseDate(r.date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    }
+    if (!groups[key]) groups[key] = { label, sum: 0, n: 0 };
+    groups[key].sum += r[field] || 0;
+    groups[key].n++;
   });
-  const d = periods[p];
-  document.getElementById('period-label').textContent = d.label;
-  document.getElementById('trend-title').textContent = d.trendTitle;
-  document.getElementById('trend-note').textContent = d.note;
-  document.getElementById('nlq-answer').classList.remove('visible');
-  renderMetrics(d.metrics);
-  renderTrend(d);
-  renderZone(p);
-  renderGhg(d.ghg);
-  renderPatrol(d.patrol);
+  const keys = Object.keys(groups).sort();
+  return { labels: keys.map(k => groups[k].label), values: keys.map(k => groups[k].sum) };
 }
 
-function renderMetrics(metrics) {
-  document.getElementById('metrics').innerHTML = metrics.map(m => `
-    <div class="mc">
-      <div class="mc-label"><i class="ti ${m.icon}"></i>${m.label}</div>
-      <div class="mc-val">${m.val}</div>
-      <div class="mc-sub">${m.sub}</div>
-      <div class="trend trend-${m.trend}">${m.trendTxt}</div>
-    </div>`).join('');
+function profile(records, mode, dim) {
+  const field = mode === 'transit' ? 'transit_all' : mode === 'parking' ? 'parking_reads' : 'bike_ins';
+  const buckets = {};
+  const hourLabels = [];
+  for (let h = 6; h <= 20; h++) hourLabels.push(`${h>12?h-12:h}${h>=12?'pm':'am'}`);
+  records.forEach(r => {
+    let key, label;
+    const d = parseDate(r.date);
+    if (dim === 'hour') {
+      const pattern = [0.02,0.04,0.08,0.12,0.14,0.16,0.18,0.16,0.14,0.10,0.06,0.04,0.02,0.02,0.02];
+      pattern.forEach((w,i) => {
+        const hk = i + 6;
+        if (!buckets[hk]) buckets[hk] = { sum: 0, n: 0, label: hourLabels[i] };
+        buckets[hk].sum += (r[field]||0) * w;
+        buckets[hk].n++;
+      });
+      return;
+    }
+    if (dim === 'dow') {
+      key = d.getDay();
+      label = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][key];
+    }
+    if (!buckets[key]) buckets[key] = { sum: 0, n: 0, label };
+    buckets[key].sum += r[field]||0;
+    buckets[key].n++;
+  });
+  const keys = Object.keys(buckets).map(Number).sort((a,b)=>a-b);
+  return {
+    labels: keys.map(k => buckets[k].label),
+    values: keys.map(k => Math.round(buckets[k].sum / Math.max(1, buckets[k].n)))
+  };
 }
 
-function renderTrend(d) {
-  if (trendChart) trendChart.destroy();
-  trendChart = new Chart(document.getElementById('trendChart'), {
+function monthlySeries(records, field) {
+  const g = {};
+  records.forEach(r => {
+    const k = monthKey(r.date);
+    g[k] = (g[k]||0) + (r[field]||0);
+  });
+  const keys = Object.keys(g).sort();
+  return { labels: keys.map(monthLabel), values: keys.map(k => g[k]) };
+}
+
+function indexSeries(values) {
+  const base = values.find(v => v > 0) || 1;
+  return values.map(v => Math.round((v / base) * 100));
+}
+
+function recentMonthRecords(records) {
+  const last = monthKey(REF_DATE);
+  return records.filter(r => monthKey(r.date) === last);
+}
+
+function avgDaily(records, field) {
+  if (!records.length) return 0;
+  return records.reduce((s,r) => s + (r[field]||0), 0) / records.length;
+}
+
+function pctDelta(cur, base) {
+  if (!base) return null;
+  return Math.round(((cur - base) / base) * 100);
+}
+
+function baselineLabel(mode) {
+  if (mode === 'prior') return 'previous month';
+  if (mode === 'program') return 'program average';
+  return 'same month last year';
+}
+
+function cycleBaseline() {
+  const opts = BASELINE_ORDER.filter(id => id !== 'yoy' || PROGRAM_DATA.length > 365);
+  const idx = opts.indexOf(baselineMode);
+  baselineMode = opts[(idx + 1) % opts.length];
+  renderOverviewMetrics();
+}
+
+function trendHtml(pct, goodUp) {
+  if (pct === null) return { cls: 'trend-neu', pct: '\u2014' };
+  const up = pct >= 0;
+  const good = goodUp ? up : !up;
+  const arrow = up ? '\u2191' : '\u2193';
+  return { cls: good ? 'trend-up' : 'trend-dn', pct: `${arrow} ${Math.abs(pct)}%` };
+}
+
+function getBaselineValue(mode, baseline, field) {
+  const all = mode === 'bike' ? BIKE_DATA : PROGRAM_DATA;
+  const recent = recentMonthRecords(all);
+  const recentVal = avgDaily(recent, field);
+  if (baseline === 'program') {
+    return avgDaily(all, field);
+  }
+  if (baseline === 'prior') {
+    const ref = parseDate(REF_DATE);
+    const pm = formatYMD(new Date(ref.getFullYear(), ref.getMonth()-1, 1));
+    const pe = formatYMD(new Date(ref.getFullYear(), ref.getMonth(), 0));
+    const prior = all.filter(r => r.date >= pm && r.date <= pe);
+    return avgDaily(prior, field);
+  }
+  const py = priorWindowRecords(all, 'last_month', null, null);
+  return avgDaily(py, field);
+}
+
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function yTick(v) {
+  if (v === 0) return '0';
+  if (Math.abs(v) >= 1000) return Math.round(v / 1000) + 'k';
+  return v;
+}
+
+function lineChart(id, labels, datasets, yLabel, ariaLabel, yOpts) {
+  destroyChart(id);
+  const yScale = {
+    min: 0,
+    ticks: { color: textC, font: { size: 11 }, callback: yTick },
+    grid: { color: gridC },
+    title: yLabel ? { display: true, text: yLabel, color: textC, font: { size: 11 } } : undefined
+  };
+  if (yOpts) Object.assign(yScale, yOpts);
+  charts[id] = new Chart(document.getElementById(id), {
     type: 'line',
-    data: { labels: d.labels, datasets: [
-      { label: 'Parking', data: d.parking, borderColor: '#378ADD', borderWidth: 2, pointRadius: 0, tension: 0.35, yAxisID: 'y', backgroundColor: 'transparent' },
-      { label: 'Transit', data: d.transit, borderColor: '#1D9E75', borderWidth: 2, pointRadius: 0, tension: 0.35, yAxisID: 'y2', backgroundColor: 'transparent' },
-      { label: 'WWU pass', data: d.wwuPass, borderColor: '#639922', borderWidth: 1.5, borderDash: [4,3], pointRadius: 0, tension: 0.35, yAxisID: 'y2', backgroundColor: 'transparent' },
-    ]},
+    data: { labels, datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toLocaleString()}` }}},
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${Number(c.parsed.y).toLocaleString()}` } } },
       scales: {
-        x: { ticks: { color: textC, font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { color: gridC }},
-        y: { position: 'left', ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { color: gridC }, title: { display: true, text: 'Parking', color: textC, font: { size: 11 }}},
-        y2: { position: 'right', ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { display: false }, title: { display: true, text: 'Boardings', color: textC, font: { size: 11 }}}
+        x: { ticks: { color: textC, font: { size: 10 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 14 }, grid: { color: gridC } },
+        y: yScale
       }
     }
   });
+  document.getElementById(id).setAttribute('aria-label', ariaLabel);
 }
 
-function renderZone(p) {
-  const zd = {
-    day:     { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [53,21,0,0,0,0,0] },
-    week:    { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [280,145,190,160,0,85,0] },
-    month:   { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [1240,820,960,880,540,420,340] },
-    quarter: { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [11200,7400,8800,8100,5200,3900,3100] },
-    year:    { labels: ['Zone 6','Zone 1','Zone 3','Zone 4','Zone 7','Zone 8','Zone 9'], data: [38000,25000,30000,27500,18000,13500,11000] },
-  }[p];
-  const colors = zd.data.map(v => v === 0 ? '#B5D4F4' : '#378ADD');
-  if (zoneChart) zoneChart.destroy();
-  zoneChart = new Chart(document.getElementById('zoneChart'), {
+function focusLineChart(id, labels, values, color, ariaLabel) {
+  const maxVal = Math.max(...values.filter(v => v != null && !isNaN(v)), 1);
+  lineChart(id, labels, [
+    { label: 'Selected', data: values, borderColor: color, borderWidth: 2.5, pointRadius: focusGroup === 'over_time' ? 0 : 3, tension: 0.35 }
+  ], '', ariaLabel, { max: Math.ceil(maxVal * 1.1) });
+}
+
+function barChartH(id, labels, data, colors, ariaLabel, avgLines) {
+  destroyChart(id);
+  charts[id] = new Chart(document.getElementById(id), {
     type: 'bar',
-    data: { labels: zd.labels, datasets: [{ label: 'Reads', data: zd.data, backgroundColor: colors, borderWidth: 0, borderRadius: 3 }]},
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, borderRadius: 3 }] },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.x === 0 ? ' not patrolled' : ` ${Number(ctx.parsed.x).toLocaleString()} reads` }}},
+      plugins: {
+        legend: { display: false },
+        avgLines: avgLines ? { avgs: avgLines } : undefined
+      },
       scales: {
-        x: { ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { color: gridC }},
-        y: { ticks: { color: textC, font: { size: 12 }}, grid: { display: false }}
+        x: { min: 0, ticks: { color: textC, font: { size: 11 }, callback: yTick }, grid: { color: gridC } },
+        y: { ticks: { color: textC, font: { size: 11 } }, grid: { display: false } }
       }
     }
   });
+  document.getElementById(id).setAttribute('aria-label', ariaLabel);
+}
 
-  if (!stopChart) {
-    stopChart = new Chart(document.getElementById('stopChart'), {
-      type: 'bar',
-      data: { labels: ['Viking Union','Haggard Hall','Bill Mc @ Rec (8181)','Bill Mc @ Rec (3076)'],
-        datasets: [{ label: 'Boardings', data: [34421,16889,13574,11680], backgroundColor: ['#1D9E75','#5DCAA5','#9FE1CB','#C5EDDF'], borderWidth: 0, borderRadius: 3 }]},
-      options: {
-        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }},
-        scales: {
-          x: { ticks: { color: textC, font: { size: 11 }, callback: v => v >= 1000 ? Math.round(v/1000)+'k' : v }, grid: { color: gridC }},
-          y: { ticks: { color: textC, font: { size: 12 }}, grid: { display: false }}
-        }
-      }
-    });
+function renderOverviewMetrics() {
+  document.getElementById('snapshot-date').textContent = monthLabel(monthKey(REF_DATE));
+
+  const cards = [
+    { icon: 'ti-bus', label: 'Transit boardings', mode: 'transit', field: 'transit_all', goodUp: true },
+    { icon: 'ti-car', label: 'Parking events', mode: 'parking', field: 'parking_reads', goodUp: false },
+    { icon: 'ti-bike', label: 'Bike INs', mode: 'bike', field: 'bike_ins', goodUp: true },
+  ];
+  const ayTransit = getAcademicYearRecords(PROGRAM_DATA);
+  const ayBike = getAcademicYearRecords(BIKE_DATA);
+  const ghgAnnual = calcGHGTotal(ayTransit, ayBike);
+  const ghgTransitAy = calcGHGTransit(ayTransit);
+  const ghgBikeAy = calcGHGBike(ayBike);
+  const ghgPct = Math.min(999, Math.round((ghgAnnual / SAP_TARGET) * 100));
+
+  const baseline = baselineMode === 'yoy' ? 'yoy' : baselineMode;
+  let html = cards.map(c => {
+    const recent = avgDaily(recentMonthRecords(c.mode === 'bike' ? BIKE_DATA : PROGRAM_DATA), c.field);
+    const base = getBaselineValue(c.mode, baseline, c.field);
+    const t = trendHtml(pctDelta(recent, base), c.goodUp);
+    return `<div class="mc mc-mode">
+      <div class="mc-label"><i class="ti ${c.icon}"></i>${c.label}</div>
+      <div class="mc-val">${Math.round(recent).toLocaleString()}</div>
+      <div class="mc-trend-block trend ${t.cls}"><span class="trend-pct">${t.pct}</span></div>
+    </div>`;
+  }).join('');
+
+  html += `<div class="mc mc-ghg">
+    <div class="mc-label"><i class="ti ti-leaf"></i>GHG avoided<span class="tooltip-icon" data-tip="Academic year to date. &plusmn;30% uncertainty. Align with SIMAP/AFLEET before publishing.">?</span></div>
+    <div class="mc-val">${ghgAnnual} MT</div>
+    <div class="mc-trend-block trend trend-neu"><span class="trend-pct">${ghgPct}%</span><span class="trend-vs">of SAP goal (${SAP_TARGET} MT)</span></div>
+    <div class="mc-ghg-shares">
+      <div class="mc-ghg-row">
+        <div class="mc-ghg-hdr"><span>Transit share</span><strong>${ghgTransitAy} MT</strong></div>
+        <div class="mc-ghg-bar"><div style="width:${Math.round(ghgTransitAy / Math.max(ghgAnnual, 0.1) * 100)}%;background:${COLORS.transit}"></div></div>
+      </div>
+      <div class="mc-ghg-row">
+        <div class="mc-ghg-hdr"><span>Bike share</span><strong>${ghgBikeAy} MT</strong></div>
+        <div class="mc-ghg-bar"><div style="width:${Math.round(ghgBikeAy / Math.max(ghgAnnual, 0.1) * 100)}%;background:${COLORS.bike}"></div></div>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('overview-metrics').innerHTML = html;
+
+  const cycleBtn = document.getElementById('baseline-cycle');
+  cycleBtn.textContent = baselineLabel(baselineMode);
+  if (!baselineCycleWired) {
+    cycleBtn.addEventListener('click', cycleBaseline);
+    baselineCycleWired = true;
   }
 }
 
-function renderGhg(g) {
-  const pct = Math.min(100, Math.round((g.val / g.target) * 100));
-  document.getElementById('ghg-content').innerHTML = `
-    <div class="ghg-row"><span class="ghg-label">${g.period}</span><div class="ghg-bar-wrap"><div class="ghg-bar" style="width:${pct}%;background:#1D9E75"></div></div><span class="ghg-val">${g.val} MT</span></div>
-    <div class="ghg-row"><span class="ghg-label">SAP annual target</span><div class="ghg-bar-wrap"><div class="ghg-bar" style="width:100%;background:#B5D4F4"></div></div><span class="ghg-val">${g.target} MT</span></div>
-    <div style="font-size:11px;color:var(--text-tertiary);margin-top:10px">${pct}% of annual SAP goal · estimated CO₂e avoided vs. equivalent SOV trips</div>`;
+function renderHeroIndex() {
+  const months = [...new Set(PROGRAM_DATA.map(r => monthKey(r.date)))].sort();
+  const labels = months.map(monthLabel);
+  const tVals = months.map(ym => PROGRAM_DATA.filter(r => monthKey(r.date) === ym).reduce((s, r) => s + r.transit_all, 0));
+  const pVals = months.map(ym => PROGRAM_DATA.filter(r => monthKey(r.date) === ym).reduce((s, r) => s + r.parking_reads, 0));
+  const bVals = months.map(ym => BIKE_DATA.filter(r => monthKey(r.date) === ym).reduce((s, r) => s + r.bike_ins, 0));
+  const tIdx = indexSeries(tVals);
+  const pIdx = indexSeries(pVals);
+  const bFirst = bVals.find(v => v > 0) || 1;
+  const bIdx = bVals.map(v => v ? Math.round((v / bFirst) * 100) : null);
+  const lastIdx = labels.length - 1;
+  lineChart('heroIndexChart', labels, [
+    { label: 'Transit', data: tIdx, borderColor: COLORS.transit, borderWidth: 2, pointRadius: 0, tension: 0.35, segment: { borderWidth: ctx => ctx.p0DataIndex >= lastIdx - 1 ? 3 : 2 } },
+    { label: 'Parking', data: pIdx, borderColor: COLORS.parking, borderWidth: 2, pointRadius: 0, tension: 0.35, segment: { borderWidth: ctx => ctx.p0DataIndex >= lastIdx - 1 ? 3 : 2 } },
+    { label: 'Bike', data: bIdx, borderColor: COLORS.bike, borderWidth: 2, pointRadius: 0, tension: 0.35, spanGaps: false, segment: { borderWidth: ctx => ctx.p0DataIndex >= lastIdx - 1 ? 3 : 2 } }
+  ], 'Index (100 = start)', 'Indexed mode activity program to date');
 }
 
-function renderPatrol(rows) {
-  document.getElementById('patrol-tbl').innerHTML = `
-    <thead><tr><th>Patroller</th><th>Zones</th><th>Reads</th><th>Duration</th><th>Status</th></tr></thead>
-    <tbody>${rows.map(r => `<tr>
-      <td>${r.p}</td><td>${r.zones}</td><td>${r.reads}</td><td>${r.dur}</td>
-      <td><span class="badge badge-${r.status}">${r.status === 'ok' ? 'on par' : r.status === 'low' ? 'below par' : 'not covered'}</span></td>
-    </tr>`).join('')}</tbody>`;
+function zoneTotals(records) {
+  const total = records.reduce((s,r) => s + r.parking_reads, 0);
+  return ZONE_WEIGHTS.map((w,i) => Math.round(total * w * ZONE_PATROLLED[i]));
 }
 
-function showAnswer(q) {
-  const el = document.getElementById('nlq-answer');
-  el.innerHTML = nlqAnswers[q];
-  el.classList.add('visible');
+function stopTotals(records) {
+  const total = records.reduce((s,r) => s + r.transit_all, 0);
+  return STOP_WEIGHTS.map(w => Math.round(total * w));
 }
 
-function askQuestion() {
-  showAnswer('q5');
+function counterTotals(records) {
+  const total = records.reduce((s,r) => s + r.bike_ins, 0);
+  return COUNTER_WEIGHTS.map(w => Math.round(total * w));
 }
 
-setPeriod('day');
+function scaledProgramAvgs(programTotals, windowRecords, programRecords) {
+  const wDays = Math.max(1, windowRecords.length);
+  const pDays = Math.max(1, programRecords.length);
+  return programTotals.map(t => Math.round(t * wDays / pDays));
+}
+
+function renderOverviewModeRows() {
+  const tLine = monthlySeries(PROGRAM_DATA, 'transit_all');
+  lineChart('ovTransitLine', tLine.labels, [{ label: 'Boardings', data: tLine.values, borderColor: COLORS.transit, borderWidth: 2, pointRadius: 0, tension: 0.35 }], 'Boardings', 'Transit ridership program to date');
+  barChartH('ovStopChart', STOP_LABELS, stopTotals(PROGRAM_DATA), ['#1D9E75','#5DCAA5','#9FE1CB','#C5EDDF'], 'Transit by stop');
+
+  const pLine = monthlySeries(PROGRAM_DATA, 'parking_reads');
+  lineChart('ovParkingLine', pLine.labels, [{ label: 'Reads', data: pLine.values, borderColor: COLORS.parking, borderWidth: 2, pointRadius: 0, tension: 0.35 }], 'Reads', 'Parking events program to date');
+  const zd = zoneTotals(PROGRAM_DATA);
+  barChartH('ovZoneChart', ZONE_LABELS, zd, zd.map((v,i) => v === 0 || ZONE_PATROLLED[i] < 0.5 ? '#B5D4F4' : COLORS.parking), 'Parking by zone');
+
+  const bLine = monthlySeries(BIKE_DATA, 'bike_ins');
+  lineChart('ovBikeLine', bLine.labels, [{ label: 'Bike INs', data: bLine.values, borderColor: COLORS.bike, borderWidth: 2, pointRadius: 0, tension: 0.35 }], 'Count INs', 'Bike counts program to date');
+  barChartH('ovBikeBar', COUNTER_LABELS, counterTotals(BIKE_DATA), ['#C9920A','#E0B040','#F0D080'], 'Bike by counter');
+}
+
+function modeRecords(mode) {
+  return mode === 'bike' ? BIKE_DATA : PROGRAM_DATA;
+}
+
+function modeColor(mode) {
+  return COLORS[mode];
+}
+
+function patrolStatus(zones) {
+  if (zones >= 6) return ['ok', 'on par'];
+  if (zones >= 3) return ['low', 'below par'];
+  return ['na', 'not covered'];
+}
+
+function patrolDuration(r) {
+  if (r.zones_patrolled === 0) return 'not patrolled';
+  return '~' + Math.round(r.zones_patrolled * 16 + seeded(parseDate(r.date).getTime() % 10000) * 8) + ' min';
+}
+
+function patrolPatroller(r, idx) {
+  if (r.zones_patrolled === 0) return '\u2014';
+  return idx % 2 === 0 ? 'P1' : 'P2';
+}
+
+function patrolPresentationMode(windowKey, days) {
+  if (windowKey === 'this_year' || windowKey === 'last_year' || windowKey === 'program') return 'period';
+  if (windowKey === 'this_quarter' || windowKey === 'last_quarter' || days > 45) return 'summary';
+  return 'daily';
+}
+
+function buildPatrolPresentation(records, windowKey) {
+  const mode = patrolPresentationMode(windowKey, records.length);
+
+  if (mode === 'daily') {
+    const daily = records.slice().reverse().map((r, i) => ({
+      date: parseDate(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      patroller: patrolPatroller(r, i),
+      zones: `${r.zones_patrolled} / 9`,
+      reads: r.parking_reads.toLocaleString(),
+      duration: patrolDuration(r),
+      status: patrolStatus(r.zones_patrolled)
+    }));
+    return { mode: 'daily', rows: daily, note: 'Daily detail for selected window' };
+  }
+
+  if (mode === 'summary') {
+    const weekday = records.filter(r => { const d = parseDate(r.date).getDay(); return d >= 1 && d <= 5; });
+    const weekend = records.filter(r => { const d = parseDate(r.date).getDay(); return d === 0 || d === 6; });
+    const flagged = records.filter(r => r.zones_patrolled < 6).length;
+    const wReads = weekday.reduce((s, r) => s + r.parking_reads, 0);
+    const weReads = weekend.reduce((s, r) => s + r.parking_reads, 0);
+    const rows = [
+      { date: null, patroller: 'Multiple', zones: 'All 9 zones', reads: wReads.toLocaleString(), duration: 'Mon\u2013Fri', status: ['ok', 'on par'] },
+      { date: null, patroller: '\u2014', zones: 'Weekend coverage', reads: weReads.toLocaleString(), duration: 'Sat\u2013Sun reduced', status: weekend.length && weekend.every(r => r.zones_patrolled >= 6) ? ['ok', 'on par'] : ['low', 'below par'] }
+    ];
+    if (flagged > 0) {
+      rows.push({ date: null, patroller: 'Partial', zones: 'Varies', reads: `Flagged days: ${flagged}`, duration: 'Low coverage days', status: ['low', 'below par'] });
+    }
+    return { mode: 'summary', rows, note: 'Weekly summary for selected window' };
+  }
+
+  const totalReads = records.reduce((s, r) => s + r.parking_reads, 0);
+  const durLabel = windowKey === 'program' ? 'Program to date' : windowKey === 'this_year' || windowKey === 'last_year' ? 'Academic year' : 'Full quarter';
+  const rows = [
+    { date: null, patroller: 'Full team', zones: 'All 9 zones', reads: totalReads.toLocaleString(), duration: durLabel, status: ['ok', 'on par'] }
+  ];
+  const flagged = records.filter(r => r.zones_patrolled < 6).length;
+  if (flagged > records.length * 0.1) {
+    rows.push({ date: null, patroller: 'Partial', zones: 'Varies', reads: `Flagged days: ${flagged}`, duration: 'Low coverage days', status: ['low', 'below par'] });
+  }
+  return { mode: 'period', rows, note: 'Period summary for selected window' };
+}
+
+function renderPatrolPanel(records) {
+  const pres = buildPatrolPresentation(records, focusWindow);
+  let displayRows = pres.rows;
+  let expandBtn = '';
+  if (pres.mode === 'daily' && pres.rows.length > 10) {
+    displayRows = patrolExpanded ? pres.rows : pres.rows.slice(0, 10);
+    expandBtn = `<button type="button" class="patrol-expand-btn" id="patrol-expand-btn">${patrolExpanded ? 'Show less' : `Show all ${pres.rows.length} days`}</button>`;
+  }
+  const dailyHeaders = pres.mode === 'daily';
+  const thead = dailyHeaders
+    ? '<tr><th>Date</th><th>Patroller</th><th>Zones</th><th>Reads</th><th>Duration</th><th>Status</th></tr>'
+    : '<tr><th>Patroller</th><th>Zones</th><th>Reads</th><th>Duration</th><th>Status</th></tr>';
+  const colspan = dailyHeaders ? 6 : 5;
+  const tbody = displayRows.length ? displayRows.map(r => {
+    const st = r.status;
+    const dateCell = dailyHeaders ? `<td>${r.date}</td>` : '';
+    return `<tr>${dateCell}<td>${r.patroller}</td><td>${r.zones}</td><td>${r.reads}</td><td>${r.duration}</td><td><span class="badge badge-${st[0]}">${st[1]}</span></td></tr>`;
+  }).join('') : `<tr><td colspan="${colspan}">No days in selected window</td></tr>`;
+
+  const fullDays = records.filter(r => r.zones_patrolled >= 6);
+  const par = fullDays.length ? Math.round(fullDays.reduce((s, r) => s + r.parking_reads, 0) / fullDays.length) : 300;
+  const coveredInWindow = records.filter(r => r.zones_patrolled >= 6).length;
+
+  return `<div class="card"><div class="card-hdr"><span class="card-title">Patrol coverage tracker</span><span class="caveat">par learned per zone &middot; flag days below par</span></div>
+    <table class="patrol-tbl"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+    ${expandBtn}
+    <div class="data-note">${pres.note}. Learned par ~${par} reads/day on full-coverage days. ${coveredInWindow} of ${records.length} days fully covered in window.</div></div>`;
+}
+
+function renderGHGPanel(mode, records) {
+  const ayTransit = getAcademicYearRecords(PROGRAM_DATA);
+  const ayBike = getAcademicYearRecords(BIKE_DATA);
+  const totalAnnual = calcGHGTotal(ayTransit, ayBike);
+  const shareAnnual = mode === 'transit' ? calcGHGTransit(ayTransit) : calcGHGBike(ayBike);
+  const pct = totalAnnual ? Math.round((shareAnnual / totalAnnual) * 100) : 0;
+  const color = modeColor(mode);
+  return `<div class="card"><div class="card-hdr"><span class="card-title">Avoided GHG</span><span class="caveat">EPA factors &plusmn;30% &middot; not audited</span></div>
+    <div class="ghg-row"><span class="ghg-label">Annual (AY to date)</span><div class="ghg-bar-wrap"><div class="ghg-bar" style="width:${Math.min(100, Math.round(totalAnnual / SAP_TARGET * 100))}%;background:var(--green)"></div></div><span class="ghg-val">${totalAnnual} MT</span></div>
+    <div class="ghg-row"><span class="ghg-label">${mode.charAt(0).toUpperCase() + mode.slice(1)} share</span><div class="ghg-bar-wrap"><div class="ghg-bar" style="width:${pct}%;background:${color}"></div></div><span class="ghg-val">${shareAnnual} MT (${pct}%)</span></div>
+    <div class="ghg-row"><span class="ghg-label">SAP annual target</span><div class="ghg-bar-wrap"><div class="ghg-bar" style="width:100%;background:#B5D4F4"></div></div><span class="ghg-val">${SAP_TARGET} MT</span></div>
+    <div class="data-note">Mode shares sum to total; each avoided trip counted once. Align with SIMAP/AFLEET before publishing.</div></div>`;
+}
+
+function renderFocus() {
+  const from = document.getElementById('custom-from').value;
+  const to = document.getElementById('custom-to').value;
+  const records = filterWindow(modeRecords(focusMode), focusWindow, from, to);
+  const color = modeColor(focusMode);
+
+  let labels, values, caveat;
+  if (focusGroup === 'over_time') {
+    const bucket = autoBucket(records);
+    const agg = aggregateTime(records, focusMode, bucket);
+    labels = agg.labels; values = agg.values;
+    caveat = `${bucket} buckets across selected window`;
+  } else {
+    const dim = focusGroup === 'hour' ? 'hour' : 'dow';
+    const prof = profile(records, focusMode, dim);
+    labels = prof.labels; values = prof.values;
+    caveat = 'Average profile across selected window';
+  }
+  if (focusMode === 'bike') {
+    caveat += ' \u00B7 synthetic data (May\u2013Oct: \u00BC transit, Nov\u2013Apr: \u2159 transit)';
+  }
+
+  document.getElementById('focus-title').textContent = focusMode.charAt(0).toUpperCase() + focusMode.slice(1);
+  const groupLabel = focusGroup === 'over_time' ? 'over time' : focusGroup === 'hour' ? 'by hour of day' : 'by day of week';
+  document.getElementById('focus-chart-title').textContent = focusMode.charAt(0).toUpperCase() + focusMode.slice(1) + ' \u2014 ' + groupLabel;
+  document.getElementById('focus-chart-caveat').textContent = caveat;
+
+  focusLineChart('focusHeroChart', labels, values, color, `${focusMode} focus chart`);
+
+  const ctx = document.getElementById('focus-context');
+  const locCard = document.getElementById('focus-location-card');
+  const locLegend = document.getElementById('focus-loc-legend');
+
+  if (focusMode === 'parking') {
+    locCard.style.order = '1';
+    ctx.style.order = '2';
+    ctx.innerHTML = renderPatrolPanel(records);
+  } else {
+    locCard.style.order = '2';
+    ctx.style.order = '1';
+    ctx.innerHTML = renderGHGPanel(focusMode, records);
+  }
+
+  document.getElementById('focus-loc-title').textContent = focusMode === 'transit' ? 'By campus stop' : focusMode === 'parking' ? 'By zone' : 'By counter';
+  const locLabels = focusMode === 'transit' ? STOP_LABELS : focusMode === 'parking' ? ZONE_LABELS : COUNTER_LABELS;
+  const locData = focusMode === 'transit' ? stopTotals(records) : focusMode === 'parking' ? zoneTotals(records) : counterTotals(records);
+  const programTotals = focusMode === 'transit' ? stopTotals(PROGRAM_DATA) : focusMode === 'parking' ? zoneTotals(PROGRAM_DATA) : counterTotals(BIKE_DATA);
+  const avgLines = scaledProgramAvgs(programTotals, records, modeRecords(focusMode));
+  locLegend.style.display = 'flex';
+
+  const locColors = focusMode === 'transit'
+    ? ['#1D9E75','#5DCAA5','#9FE1CB','#C5EDDF']
+    : focusMode === 'parking'
+      ? locData.map((v,i) => v === 0 || ZONE_PATROLLED[i] < 0.5 ? '#B5D4F4' : COLORS.parking)
+      : ['#C9920A','#E0B040','#F0D080'];
+  barChartH('focusLocChart', locLabels, locData, locColors, 'Location breakdown', avgLines);
+}
+
+function showView(view, mode) {
+  activeView = view;
+  document.getElementById('view-overview').classList.toggle('active', view === 'overview');
+  document.getElementById('view-focus').classList.toggle('active', view === 'focus');
+  if (view === 'focus') {
+    focusMode = mode;
+    if (mode === 'parking') patrolExpanded = false;
+    renderFocus();
+  } else {
+    renderOverview();
+  }
+}
+
+function renderOverview() {
+  renderOverviewMetrics();
+  renderHeroIndex();
+  renderOverviewModeRows();
+}
+
+document.querySelectorAll('[data-focus]').forEach(el => {
+  const open = () => showView('focus', el.dataset.focus);
+  el.addEventListener('click', open);
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+});
+document.getElementById('back-overview').addEventListener('click', () => showView('overview'));
+document.querySelectorAll('#group-bar .ctrl-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    focusGroup = btn.dataset.group;
+    document.querySelectorAll('#group-bar .ctrl-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderFocus();
+  });
+});
+document.getElementById('window-select').addEventListener('change', e => {
+  focusWindow = e.target.value;
+  patrolExpanded = false;
+  document.getElementById('custom-range-wrap').style.display = focusWindow === 'custom' ? 'inline-flex' : 'none';
+  renderFocus();
+});
+['custom-from','custom-to'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    patrolExpanded = false;
+    renderFocus();
+  });
+});
+
+document.getElementById('focus-context').addEventListener('click', e => {
+  if (e.target.id === 'patrol-expand-btn') {
+    patrolExpanded = !patrolExpanded;
+    const from = document.getElementById('custom-from').value;
+    const to = document.getElementById('custom-to').value;
+    const records = filterWindow(PROGRAM_DATA, focusWindow, from, to);
+    document.getElementById('focus-context').innerHTML = renderPatrolPanel(records);
+  }
+});
+
+document.getElementById('custom-from').value = PROGRAM_DATA[0].date;
+document.getElementById('custom-to').value = REF_DATE;
+headerSub();
+renderOverview();
 </script>
 </body>
 </html>
